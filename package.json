@@ -1,0 +1,24 @@
+{
+  "name": "cloak-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lean MCP server for CloakBrowser stealth Chromium: AI aria snapshots, humanized input, dialog-aware actions, runtime profile switching.",
+  "type": "module",
+  "bin": { "cloak-mcp": "dist/index.js" },
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "cloakbrowser": "0.5.12",
+    "playwright-core": "1.63.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}
