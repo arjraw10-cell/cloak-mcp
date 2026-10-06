@@ -15,6 +15,9 @@ whole page. This one has 20 tools (~1.75k tokens) and none of those problems.
 
 ### 1. Clone and build
 
+The repo is private, so authenticate first if this machine isn't logged in to GitHub: `gh auth login`
+([GitHub CLI](https://cli.github.com)). Without the CLI, use a personal access token as the password.
+
 ```bash
 git clone https://github.com/arjraw10-cell/cloak-mcp.git
 cd cloak-mcp
