@@ -12,7 +12,7 @@ export interface Tool {
   handler: (session: Session, args: any) => Promise<ToolResult>;
 }
 
-const ref = z.string().describe("Element ref from the latest snapshot, e.g. e12 (a CSS selector also works)");
+const ref = z.string().describe("Element ref from the latest snapshot, e.g. e12 or f1e12 (a CSS selector also works)");
 const modifiers = z.array(z.enum(["Alt", "Control", "ControlOrMeta", "Meta", "Shift"])).optional();
 
 const PROBES = {

@@ -16,8 +16,11 @@ export type ToolResult = {
 
 export const text = (t: string, isError = false): ToolResult => ({ content: [{ type: "text", text: t }], ...(isError && { isError }) });
 
+/** Snapshot refs: e12 in the first document, f1e12 inside iframes and after the page navigates. */
+const SNAPSHOT_REF = /^(f\d+)?e\d+$/;
+
 export function locate(page: Page, ref: string): Locator {
-  return /^e\d+$/.test(ref) ? page.locator(`aria-ref=${ref}`) : page.locator(ref);
+  return SNAPSHOT_REF.test(ref) ? page.locator(`aria-ref=${ref}`) : page.locator(ref);
 }
 
 /** Wait until visible, scroll into view, and return a point slightly off-center (humans don't hit dead center). */
@@ -139,7 +142,7 @@ async function settle(page: Page): Promise<void> {
 function explain(e: unknown, ref?: string): string {
   const msg = e instanceof Error ? e.message : String(e);
   const first = msg.split("\n")[0];
-  if (ref && /^e\d+$/.test(ref) && /aria-ref|not found|failed attached|resolved to/i.test(msg)) {
+  if (ref && SNAPSHOT_REF.test(ref) && /aria-ref|not found|failed attached|resolved to/i.test(msg)) {
     return `Ref ${ref} no longer exists — the page changed since the last snapshot. Use a ref from the fresh snapshot below.`;
   }
   if (/Timeout .* exceeded/.test(first)) {
