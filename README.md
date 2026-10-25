@@ -129,6 +129,21 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
   snapshot.
 - **Dialogs can't hang a call.** Actions race against `dialog` and `filechooser` events and report the modal instead
   of blocking.
+- **Open page dialogs are called out.** When the snapshot holds a visible `dialog` or `alertdialog`, the result's first
+  line says so, e.g. `Dialog open: "Verification status" [ref=e572] (Close: [ref=e588]). The page behind it may be
+  inert.`
+- **No silent success on covered targets.** Before a click, type, hover, drag, select or check, the target must be
+  outside any `inert` / `aria-hidden` subtree and be topmost at its center (its own `<label>` counts, so custom
+  checkboxes over a hidden input still work). After ~1.2 s of retries, the action is refused with the blocker named,
+  e.g. `Target e353 is covered by an open dialog "Verification status" — close it first (Close button: e588).`, plus
+  a full snapshot.
+- **Navigation waits for the app to render.** After `domcontentloaded`, navigate (also back/forward/reload and
+  `browser_tabs new` with a URL) waits up to 8 s for no visible indeterminate progress bar and an interactive element
+  in `main` (or `body`), then snapshots whatever is there. No `networkidle`: consoles like Google Cloud's never idle.
+- **Typing waits for the value.** After typing, the result waits up to 1 s for the field to contain the text, so a
+  late-committing field isn't reported as unchanged.
+- **Humanize is always on.** Every click, type, hover and drag uses humanized input; there are no tools to toggle it
+  or read config (the server's MCP instructions say so). Only the `--no-humanize` launch flag turns it off.
 - **Humanize-compatible.** CloakBrowser's humanize patch replaces Locator actions with a resolver that can't read
   `aria-ref` selectors. So clicks and typing go through the humanized `page.mouse` / `page.keyboard` at the element's
   box, and selects/checkboxes use element handles, which the patch leaves alone.

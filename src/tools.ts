@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { z } from "zod";
 import type { Cap } from "./config.js";
-import { act, clickAt, locate, pageState, pointOf, text, typeInto, type ToolResult } from "./page-actions.js";
+import { act, assertReceivesInput, clickAt, locate, pageState, pointOf, text, typeInto, waitForRender, type ToolResult } from "./page-actions.js";
 import type { Session } from "./session.js";
 
 export interface Tool {
@@ -34,6 +34,7 @@ export const tools: Tool[] = [
         else if (url === "forward") await page.goForward(opts);
         else if (url === "reload") await page.reload(opts);
         else await page.goto(url, opts);
+        await waitForRender(page);
         return `Navigated (${url}).`;
       }, { snapshot: "full" }),
   },
@@ -98,6 +99,7 @@ export const tools: Tool[] = [
             // Element handles bypass the humanize Locator patch, which can't resolve aria refs.
             const el = await loc.elementHandle({ timeout });
             if (!el) throw new Error(`Ref ${f.ref} not found.`);
+            await assertReceivesInput(loc);
             if (f.type === "combobox") await el.selectOption({ label: f.value }, { timeout });
             else await el.setChecked(f.value === "true", { timeout });
           }
@@ -113,8 +115,10 @@ export const tools: Tool[] = [
       act(
         s,
         async (page) => {
-          const el = await locate(page, a.ref).elementHandle({ timeout: s.cfg.actionTimeoutMs });
+          const loc = locate(page, a.ref);
+          const el = await loc.elementHandle({ timeout: s.cfg.actionTimeoutMs });
           if (!el) throw new Error(`Ref ${a.ref} not found.`);
+          await assertReceivesInput(loc);
           const picked = await el.selectOption(a.values, { timeout: s.cfg.actionTimeoutMs });
           return `Selected ${picked.join(", ")}.`;
         },
@@ -236,7 +240,7 @@ export const tools: Tool[] = [
       await s.page();
       if (a.action === "new") {
         const page = await s.newTab();
-        if (a.url) return act(s, async () => (await page.goto(a.url, { waitUntil: "domcontentloaded" }), "Opened new tab."));
+        if (a.url) return act(s, async () => (await page.goto(a.url, { waitUntil: "domcontentloaded" }), await waitForRender(page), "Opened new tab."));
       } else if (a.action === "select") {
         s.selectTab(a.index ?? 0);
       } else if (a.action === "close") {

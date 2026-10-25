@@ -32,7 +32,12 @@ function inputSchema(schema: z.ZodObject) {
   return json as { type: "object"; [k: string]: unknown };
 }
 
-const server = new Server({ name: "cloak-mcp", version: "0.1.0" }, { capabilities: { tools: {} } });
+// Agents have looked for humanize/config toggle tools from older servers; say plainly there are none.
+const instructions = cfg.humanize
+  ? "Humanized input (human-like mouse paths and typing cadence) is always on for every click, type, hover and drag, and cannot be turned off. This server has no humanize or config tools."
+  : "Humanized input is off for this server (started with --no-humanize); it cannot be changed at runtime. This server has no humanize or config tools.";
+
+const server = new Server({ name: "cloak-mcp", version: "0.1.0" }, { capabilities: { tools: {} }, instructions });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: enabled.map((t) => ({ name: t.name, description: t.description, inputSchema: inputSchema(t.schema) })),
