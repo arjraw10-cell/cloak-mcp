@@ -142,6 +142,9 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
   in `main` (or `body`), then snapshots whatever is there. No `networkidle`: consoles like Google Cloud's never idle.
 - **Typing waits for the value.** After typing, the result waits up to 1 s for the field to contain the text, so a
   late-committing field isn't reported as unchanged.
+- **Long text types about 4x faster.** Text with more than 5 sentences, or over 500 characters, is typed with the
+  humanized typing delays divided by 8 for that call (each key also costs a fixed round trip), so an essay takes about
+  17 s per 360 characters instead of 73 s. Short text keeps normal human speed.
 - **Humanize is always on.** Every click, type, hover and drag uses humanized input; there are no tools to toggle it
   or read config (the server's MCP instructions say so). Only the `--no-humanize` launch flag turns it off.
 - **Humanize-compatible.** CloakBrowser's humanize patch replaces Locator actions with a resolver that can't read

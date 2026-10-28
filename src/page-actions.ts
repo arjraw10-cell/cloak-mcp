@@ -104,6 +104,32 @@ export async function clickAt(page: Page, x: number, y: number, opts: { button?:
   }
 }
 
+/** Long text: more than 5 sentences, or over 500 characters (code and lists have few sentence ends). */
+export function isLongText(value: string): boolean {
+  return value.length > 500 || (value.match(/[.!?]+(\s|$)/g)?.length ?? 0) > 5;
+}
+
+// Each key also costs a fixed round trip, so the delays shrink 8x for typing about 4x faster overall.
+const FAST_TYPING_DIVISOR = 8;
+const TYPING_TIMINGS = ["typing_delay", "typing_delay_spread", "typing_pause_range", "key_hold", "shift_down_delay", "shift_up_delay", "mistype_delay_notice", "mistype_delay_correct"];
+
+/**
+ * Humanized typing, about 4x faster for long text so an essay doesn't take minutes.
+ * The patched page.keyboard.type ignores per-call config and reads the page's
+ * config object (page._humanCfg), so its timings are scaled for this one call.
+ */
+async function humanType(page: Page, value: string): Promise<void> {
+  const cfg = (page as unknown as { _humanCfg?: Record<string, number | number[]> })._humanCfg;
+  if (!cfg || !isLongText(value)) return page.keyboard.type(value);
+  const saved = TYPING_TIMINGS.map((k) => [k, cfg[k]] as const);
+  for (const [k, v] of saved) cfg[k] = Array.isArray(v) ? v.map((n) => n / FAST_TYPING_DIVISOR) : (v as number) / FAST_TYPING_DIVISOR;
+  try {
+    await page.keyboard.type(value);
+  } finally {
+    for (const [k, v] of saved) cfg[k] = v;
+  }
+}
+
 export async function typeInto(page: Page, loc: Locator, value: string, opts: { append?: boolean; humanize: boolean; timeout: number }): Promise<void> {
   if (!opts.humanize) {
     if (opts.append) await loc.pressSequentially(value, { timeout: opts.timeout });
@@ -117,7 +143,7 @@ export async function typeInto(page: Page, loc: Locator, value: string, opts: { 
     await page.keyboard.press("ControlOrMeta+A");
     await page.keyboard.press("Backspace");
   }
-  await page.keyboard.type(value);
+  await humanType(page, value);
   // Let the value land before the diff snapshot, so a type that took effect isn't reported as unchanged.
   await page
     .waitForFunction(
