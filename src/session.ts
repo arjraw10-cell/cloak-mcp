@@ -166,11 +166,22 @@ export class Session {
       viewport: this.cfg.viewport ?? null,
       args: seed !== undefined ? [`--fingerprint=${seed}`] : [],
     };
+    // CloakBrowser and Playwright both pass --no-sandbox (needed in Linux containers), which turns off
+    // Chromium's process sandbox and shows an "unsupported command-line flag" bar. On Windows the
+    // sandbox works with CloakBrowser's binary and leaves the fingerprint unchanged, so keep it on.
+    const sandbox =
+      process.platform === "win32"
+        ? {
+            stealthArgs: false,
+            args: [...cb.getDefaultStealthArgs().filter((a) => a !== "--no-sandbox"), ...opts.args],
+            launchOptions: { chromiumSandbox: true },
+          }
+        : {};
     let ctx: BrowserContext;
     try {
       ctx = this.profileDir
-        ? await cb.launchPersistentContext({ ...opts, userDataDir: this.profileDir })
-        : await cb.launchContext(opts);
+        ? await cb.launchPersistentContext({ ...opts, ...sandbox, userDataDir: this.profileDir })
+        : await cb.launchContext({ ...opts, ...sandbox });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       const hint = this.profileDir

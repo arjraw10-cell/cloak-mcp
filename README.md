@@ -142,6 +142,10 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
   in `main` (or `body`), then snapshots whatever is there. No `networkidle`: consoles like Google Cloud's never idle.
 - **Typing waits for the value.** After typing, the result waits up to 1 s for the field to contain the text, so a
   late-committing field isn't reported as unchanged.
+- **Sandbox on (Windows).** CloakBrowser and Playwright both pass `--no-sandbox` (needed in Linux containers), which
+  turns off Chromium's process sandbox and shows an "unsupported command-line flag" bar in profile windows. On Windows
+  the server launches without it (`stealthArgs: false` with the default stealth args minus that flag, and
+  `chromiumSandbox: true`). Fingerprint and bot-detection results are unchanged.
 - **Long text types about 4x faster.** Text with more than 5 sentences, or over 500 characters, is typed with the
   humanized typing delays divided by 8 for that call (each key also costs a fixed round trip), so an essay takes about
   17 s per 360 characters instead of 73 s. Short text keeps normal human speed.
