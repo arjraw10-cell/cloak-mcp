@@ -53,7 +53,9 @@ prompt, with no tool names. `gen_fixtures.py` regenerates the large-page fixture
 - `results/schema_tokens.json`, `results/tool_schemas.json`: static tool-schema cost of each layer (current, i.e.
   cloak-mcp v2); `results/schema_tokens_v1.json`, `results/tool_schemas_v1.json`: the same for v1.
 - Phases: `dev` runs are harness checks, `pilot` is 6 tasks x 1 repeat, `full` is the analysed run with cloak-mcp
-  v1, `full2` is the identical suite rerun (all configs) with cloak-mcp v2.
+  v1, `full2` is the identical suite rerun (all configs) with cloak-mcp v2, `full3` reruns only the Kairos configs
+  with Kairos v2 (same seeded order: the full 420-run list is shuffled, then filtered), `full4` reruns cc-cloak and
+  the Kairos configs with cloak-mcp v2.1 and Kairos v2.1.
 
 Cost = each API response's token usage x the prices in `provider.json` (Haiku 5.5: $0.10 in / $0.50 out per 1M,
 $0.50 / $2.50 above 100K prompt tokens; cache reads 0.1x and cache writes 1.25x the input price). The runner
@@ -65,11 +67,14 @@ stops launching runs at $18 total.
 |---|---|
 | cloak-mcp v1 (phases pilot, full) | commit 96aa864 (package 0.1.0; cloakbrowser npm 0.5.12, playwright-core 1.63.0, MCP SDK 1.32.1) |
 | cloak-mcp v2 (phase full2) | commit 76211fc (large-page snapshot card, `browser_find`, `browser_snapshot` target/depth; same dependencies) |
+| cloak-mcp v2.1 (phase full4) | commit 1d22924 (section snapshots keep other refs valid; `browser_find` shows the whole matching row and splits literal "a\|b" searches; outline lists dropdowns) |
 | @devinwangd/cloak-browser-mcp | 0.1.4 (cloakbrowser npm 0.3.32, playwright-core 1.65.1, MCP SDK 1.32.2) |
 | @playwright/mcp | 0.0.86 (playwright 1.66.0-alpha-2026-11-18) |
 | CloakBrowser Chromium | 146.0.7680.177.5 (windows-x64) |
 | Claude Code | 2.1.329 |
-| Kairos | commit ac28cd7 (branch v4-claude-standby); Python 3.12.3; cloakbrowser 0.6.0, playwright 1.63.0 |
+| Kairos v1 (phases pilot, full, full2) | commit ac28cd7 (branch v4-claude-standby); Python 3.12.3; cloakbrowser 0.6.0, playwright 1.63.0 |
+| Kairos v2 (phase full3) | commit 116efbc (large-page card, ref-aware `browser_search_page`, `browser_snapshot` target/depth; same dependencies) |
+| Kairos v2.1 (phase full4) | commit 0367e99 (same ref and whole-row fixes, "a\|b" fallback for literal patterns, fast jump before far scrolls) |
 | Node.js | 25.6.1 |
 | Models | `claude-haiku-5-5` (Anthropic API); `z-ai/glm-5.3-flash` (OpenRouter); `gpt-6-luna`, `gpt-6.1-sol` (OpenAI) |
 
@@ -106,11 +111,27 @@ copy results\schema_tokens.json results\schema_tokens_v1.json & copy results\too
 powershell -File launch.ps1 full2 --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
 .venv\Scripts\python analyze.py full2
 .venv\Scripts\python compare.py
+
+rem Kairos v2 rerun: check out 116efbc in C:\Users\arjra\Documents\Kairos, then
+.venv\Scripts\python schema_tokens.py kairos-only
+powershell -File launch.ps1 full3 --configs kairos --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
+.venv\Scripts\python analyze.py full3
+.venv\Scripts\python compare_kairos.py
+
+rem cloak-mcp v2.1 + Kairos v2.1 rerun: check out 1d22924 in vendor\cloak-mcp (npm ci && npm run build) and 0367e99 in Kairos, then
+.venv\Scripts\python schema_tokens.py full4
+powershell -File launch.ps1 full4 --configs cc-cloak,kairos --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
+.venv\Scripts\python analyze.py full4
+.venv\Scripts\python compare_full4.py
 ```
 
 `analyze.py full` writes `results/summary.md` (generated tables plus the hand-written findings in
 `results/notes.md`). `python analyze.py pilot` writes `results/summary_pilot.md`; `analyze.py full2` writes
 `results/summary_full2.md` (with `results/notes_full2.md`); `compare.py` writes `results/compare_v1_v2.md`.
+`analyze.py full3` writes `results/summary_full3.md` (with `results/notes_full3.md`); `compare_kairos.py` writes
+`results/compare_kairos.md`; `schema_tokens.py kairos-only` writes `results/schema_tokens_full3.json`.
+`analyze.py full4` writes `results/summary_full4.md` (with `results/notes_full4.md`); `compare_full4.py` writes
+`results/compare_full4.md`; `schema_tokens.py full4` writes `results/schema_tokens_full4.json` (cloak-mcp and Kairos).
 
 `launch.ps1` runs `bench.py` through `schtasks /it` (only when the user is logged on), so the browsers are headed
 on the desktop and the run survives SSH disconnects; progress goes to `results/raw/console.log`. Rerunning the

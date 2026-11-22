@@ -1,5 +1,5 @@
 """Benchmark runner. usage:
-  python bench.py dev|pilot|full|full2 [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
+  python bench.py dev|pilot|full|full2|full3|full4 [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
                              [--configs cc-cloak,...] [--tasks id,...] [--repeats N]
 Writes results/raw/{runs,calls,api_errors}.jsonl and one transcript per run. Finished runs
 (in runs.jsonl) are skipped on restart; runs that died from API errors are re-queued.
@@ -260,15 +260,17 @@ def plan(phase, bonus, configs, task_ids, repeats):
     combos = [(c, CORE_MODEL) for c in CORE] + [("kairos", m) for m in bonus]
     specs = [dict(run_id=f"{phase}.{c}.{m}.{t}.r{r}", phase=phase, config=c, model=m, effort=EFFORT, task=t,
                   cat=T.BY_ID[t]["cat"], repeat=r)
-             for c, m in combos if not configs or c in configs
-             for t in task_ids for r in range(1, repeats + 1)]
+             for c, m in combos for t in task_ids for r in range(1, repeats + 1)]
     random.Random(SEED).shuffle(specs)
-    return specs
+    # Filter after shuffling, so a config-filtered phase keeps the same relative order as the full run.
+    return [s for s in specs if not configs or s["config"] in configs]
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("phase", choices=["dev", "pilot", "full", "full2"])  # dev = harness checks; full2 = rerun with cloak-mcp v2
+    ap.add_argument("phase", choices=["dev", "pilot", "full", "full2", "full3", "full4"])
+    # dev = harness checks; full2 = rerun with cloak-mcp v2; full3 = Kairos-only rerun with Kairos 116efbc;
+    # full4 = cloak-mcp 1d22924 and Kairos 0367e99 (cc-cloak and kairos configs only)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--bonus", default="")
     ap.add_argument("--configs", default="")

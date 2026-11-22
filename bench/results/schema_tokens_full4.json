@@ -1,0 +1,12 @@
+{
+  "cc-cloak": {
+    "tools": 21,
+    "tiktoken_o200k": 2307,
+    "anthropic_tokens": 3764
+  },
+  "kairos": {
+    "tools": 20,
+    "tiktoken_o200k": 1907,
+    "anthropic_tokens": 3117
+  }
+}

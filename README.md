@@ -33,17 +33,22 @@ config rerun on the identical suite:
   small-page tasks cost 4–14% more tokens than in v1, from the extra tool's schema and from agents calling
   `browser_find` where reading the page would do. The configs that didn't change drifted −10% to +16% between the
   two runs, so that is within noise.
+- **v2.1 (current, 1d22924):** fixes from a later Kairos run. A match inside a table row now shows the whole row
+  (in v2 it could end on the previous row's button), section snapshots no longer make other refs stale, and the
+  outline lists dropdowns. Rerun on the same suite: 97% success, 22.8k tokens per success, 30.5k per large-page
+  task.
 - **Caveats:** v2 was designed after seeing v1's large-page results, so it targets exactly the weakness this suite
   found. It was developed against a separate test page, not the suite's fixtures, but an independent large-page
   test set would make the claim stronger. Unchanged configs moved by up to 3 points in success between runs, so
   cloak-mcp, Playwright MCP and Kairos are within noise of each other on success. Wall-clock time is not compared:
   every layer except Playwright MCP types and clicks with deliberately human-like timing.
 
-Both runs: 840 runs, $2.55. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/); method and
-rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md). Tables: v2 in
+Four full runs (1,380 runs) plus the pilot cost $4.26 in total. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/);
+method and rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md). Tables: v2 in
 [`bench/results/summary_full2.md`](bench/results/summary_full2.md), v1 in
-[`bench/results/summary.md`](bench/results/summary.md), and v1 vs v2 per category in
-[`bench/results/compare_v1_v2.md`](bench/results/compare_v1_v2.md).
+[`bench/results/summary.md`](bench/results/summary.md), v1 vs v2 per category in
+[`bench/results/compare_v1_v2.md`](bench/results/compare_v1_v2.md), and v2.1 plus Kairos's port in
+[`bench/results/compare_full4.md`](bench/results/compare_full4.md).
 
 ## Setup on any computer
 
@@ -165,10 +170,11 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
   changed (refs are stable across snapshots). On Wikipedia that's ~400 chars instead of ~30k. Errors include a full
   snapshot.
 - **Large pages get a card, not the whole page.** When a page's snapshot is over 8,000 characters, navigate (and
-  any action that falls back to a full page) returns its top (~4k characters), an outline of headings, landmarks and
-  tables with row counts, and the path of the full snapshot saved to a temp file. `browser_find` searches a fresh
-  snapshot of the whole page by text or regex and returns each match with its ref, 3 lines of context and its
-  ancestors, plus the total count (ported from Playwright MCP's, Apache-2.0). `browser_snapshot` with `target=<ref>`
+  any action that falls back to a full page) returns its top (~4k characters), an outline of headings, landmarks,
+  tables with row counts and dropdowns with option counts, and the path of the full snapshot saved to a temp file.
+  `browser_find` searches a fresh snapshot of the whole page by text or regex and returns each match with its ref,
+  its ancestors, and as context the whole table row or list item holding it (else 3 lines), plus the total count
+  (ported from Playwright MCP's, Apache-2.0). A text search for `a|b` with no literal match searches each part. `browser_snapshot` with `target=<ref>`
   (and optional `depth`) reads one section; with no arguments it still returns the full page.
 - **Dialogs can't hang a call.** Actions race against `dialog` and `filechooser` events and report the modal instead
   of blocking.
