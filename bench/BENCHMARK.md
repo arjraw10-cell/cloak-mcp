@@ -50,8 +50,10 @@ prompt, with no tool names. `gen_fixtures.py` regenerates the large-page fixture
 - `results/raw/api_errors.jsonl`: runs that died from API/provider errors (re-queued, not counted as failures).
 - `results/raw/transcripts/<run_id>.jsonl` (+ `.err`): the raw Claude Code stream-json / Kairos event stream.
 - `results/raw/server_events.jsonl`: everything the fixtures submitted.
-- `results/schema_tokens.json`, `results/tool_schemas.json`: static tool-schema cost of each layer.
-- Phases: `dev` runs are harness checks, `pilot` is 6 tasks x 1 repeat, `full` is the analysed run.
+- `results/schema_tokens.json`, `results/tool_schemas.json`: static tool-schema cost of each layer (current, i.e.
+  cloak-mcp v2); `results/schema_tokens_v1.json`, `results/tool_schemas_v1.json`: the same for v1.
+- Phases: `dev` runs are harness checks, `pilot` is 6 tasks x 1 repeat, `full` is the analysed run with cloak-mcp
+  v1, `full2` is the identical suite rerun (all configs) with cloak-mcp v2.
 
 Cost = each API response's token usage x the prices in `provider.json` (Haiku 5.5: $0.10 in / $0.50 out per 1M,
 $0.50 / $2.50 above 100K prompt tokens; cache reads 0.1x and cache writes 1.25x the input price). The runner
@@ -61,7 +63,8 @@ stops launching runs at $18 total.
 
 | component | version |
 |---|---|
-| cloak-mcp | commit 96aa864 (package 0.1.0; cloakbrowser npm 0.5.12, playwright-core 1.63.0, MCP SDK 1.32.1) |
+| cloak-mcp v1 (phases pilot, full) | commit 96aa864 (package 0.1.0; cloakbrowser npm 0.5.12, playwright-core 1.63.0, MCP SDK 1.32.1) |
+| cloak-mcp v2 (phase full2) | commit 76211fc (large-page snapshot card, `browser_find`, `browser_snapshot` target/depth; same dependencies) |
 | @devinwangd/cloak-browser-mcp | 0.1.4 (cloakbrowser npm 0.3.32, playwright-core 1.65.1, MCP SDK 1.32.2) |
 | @playwright/mcp | 0.0.86 (playwright 1.66.0-alpha-2026-11-18) |
 | CloakBrowser Chromium | 146.0.7680.177.5 (windows-x64) |
@@ -96,10 +99,18 @@ powershell -File launch.ps1 pilot --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
 .venv\Scripts\python pilot_report.py
 powershell -File launch.ps1 full --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
 .venv\Scripts\python analyze.py full
+
+rem cloak-mcp v2 rerun: check out 76211fc in vendor\cloak-mcp, npm ci && npm run build, then
+copy results\schema_tokens.json results\schema_tokens_v1.json & copy results\tool_schemas.json results\tool_schemas_v1.json
+.venv\Scripts\python schema_tokens.py
+powershell -File launch.ps1 full2 --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
+.venv\Scripts\python analyze.py full2
+.venv\Scripts\python compare.py
 ```
 
 `analyze.py full` writes `results/summary.md` (generated tables plus the hand-written findings in
-`results/notes.md`). `python analyze.py pilot` writes `results/summary_pilot.md`.
+`results/notes.md`). `python analyze.py pilot` writes `results/summary_pilot.md`; `analyze.py full2` writes
+`results/summary_full2.md` (with `results/notes_full2.md`); `compare.py` writes `results/compare_v1_v2.md`.
 
 `launch.ps1` runs `bench.py` through `schtasks /it` (only when the user is logged on), so the browsers are headed
 on the desktop and the run survives SSH disconnects; progress goes to `results/raw/console.log`. Rerunning the

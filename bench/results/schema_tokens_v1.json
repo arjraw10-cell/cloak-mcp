@@ -1,0 +1,27 @@
+{
+  "cc-cloak": {
+    "tools": 20,
+    "tiktoken_o200k": 2036,
+    "anthropic_tokens": 3379
+  },
+  "cc-devin": {
+    "tools": 80,
+    "tiktoken_o200k": 8387,
+    "anthropic_tokens": 13213
+  },
+  "cc-playwright": {
+    "tools": 25,
+    "tiktoken_o200k": 4640,
+    "anthropic_tokens": 7083
+  },
+  "cc-devin-default-caps": {
+    "tools": 34,
+    "tiktoken_o200k": 4339,
+    "anthropic_tokens": 6956
+  },
+  "kairos": {
+    "tools": 20,
+    "tiktoken_o200k": 1818,
+    "anthropic_tokens": 3001
+  }
+}

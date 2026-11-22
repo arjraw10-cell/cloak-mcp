@@ -6,31 +6,44 @@ and types like a human, and keeps logins in persistent profiles.
 
 It started as a rewrite of `@devinwangd/cloak-browser-mcp` 0.1.x. That server had 80 tools (13.2k schema tokens),
 and in it a JS `alert()` could freeze the session, many snapshot refs couldn't be clicked, and every action re-sent
-the whole page. This one has 20 tools (3.4k schema tokens) and none of those problems.
+the whole page. This one has 21 tools (3.8k schema tokens) and none of those problems.
 
 ## Benchmark
 
 30 browser tasks (forms, dialogs, iframes/tabs, large pages, dynamic SPAs, plus 8 on public practice sites), each
 checked by code, not an LLM judge. Same model everywhere (`claude-haiku-5-5`, effort low), same CloakBrowser
-binary, 60 runs per config, November 2026:
+binary, 60 runs per config, November 2026. This is the second full run (cloak-mcp v2, commit 76211fc), with every
+config rerun on the identical suite:
 
 | Browser layer | Success (95% CI) | Hangs | Tool errors / run | Tokens per success | Tool calls / task | Schema tokens |
 |---|---|---|---|---|---|---|
-| **cloak-mcp** (Claude Code) | 97% (89–99) | 0% | **0.07** | 35.8k | **4.5** | 3,379 |
-| Playwright MCP 0.0.86 (Claude Code) | 98% (91–100) | 2% | 0.25 | 38.6k | 5.8 | 7,083 |
-| @devinwangd/cloak-browser-mcp, 80 tools (Claude Code) | 83% (72–91) | 17% | 0.30 | 75.1k | 5.9 | 13,213 |
-| Kairos native browser tools (Kairos) | 100% (94–100) | 0% | 0.18 | 35.6k | 4.6 | 3,001 |
+| **cloak-mcp** (Claude Code) | 100% (94–100) | 0% | **0.05** | **22.5k** | 4.9 | 3,764 |
+| Playwright MCP 0.0.86 (Claude Code) | 100% (94–100) | 2% | 0.32 | 40.6k | 6.2 | 7,083 |
+| @devinwangd/cloak-browser-mcp, 80 tools (Claude Code) | 82% (70–89) | 17% | 0.30 | 80.1k | 6.6 | 13,213 |
+| Kairos native browser tools (Kairos) | 97% (89–99) | 0% | 0.32 | 39.4k | 4.8 | 3,001 |
 
-- **Dialogs:** devinwangd froze on all 10 dialog runs (`alert`, `confirm`, `prompt`) until the 5-minute kill and
-  failed nothing else. cloak-mcp's click on the same pop-ups returned in under a second, saying which dialog was open.
-- **Where cloak-mcp loses:** large pages. It used 117k tokens per successful large-page task vs 42k for Playwright
-  MCP, because `browser_navigate` inlines a full snapshot (up to ~10k tokens) on every load.
-- cloak-mcp, Playwright MCP and Kairos are within noise of each other on success. Wall-clock time is not compared:
+- **Dialogs:** devinwangd froze on all 10 dialog runs (`alert`, `confirm`, `prompt`) in both runs, until the
+  5-minute kill, and failed nothing else. cloak-mcp's click on the same pop-ups returned in under a second, saying
+  which dialog was open.
+- **Large pages, v1 → v2:** v1 inlined a full snapshot (up to ~10k tokens) on every page load and used 117k tokens
+  per successful large-page task, vs 42k for Playwright MCP. v2 returns a short card for big pages and adds
+  `browser_find` (see Design notes). Large-page cost fell to 33k per task, the lowest of the four (Playwright MCP:
+  46k). The first page result shrank from 8.9k to 1.3k tokens.
+- **Where cloak-mcp still loses:** on one large-page task (`large-order-count`, 47k vs Playwright MCP's 41k). And
+  small-page tasks cost 4–14% more tokens than in v1, from the extra tool's schema and from agents calling
+  `browser_find` where reading the page would do. The configs that didn't change drifted −10% to +16% between the
+  two runs, so that is within noise.
+- **Caveats:** v2 was designed after seeing v1's large-page results, so it targets exactly the weakness this suite
+  found. It was developed against a separate test page, not the suite's fixtures, but an independent large-page
+  test set would make the claim stronger. Unchanged configs moved by up to 3 points in success between runs, so
+  cloak-mcp, Playwright MCP and Kairos are within noise of each other on success. Wall-clock time is not compared:
   every layer except Playwright MCP types and clicks with deliberately human-like timing.
 
-Whole run: 420 runs, $1.33. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/); method and
-rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md), full tables and failure excerpts in
-[`bench/results/summary.md`](bench/results/summary.md).
+Both runs: 840 runs, $2.55. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/); method and
+rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md). Tables: v2 in
+[`bench/results/summary_full2.md`](bench/results/summary_full2.md), v1 in
+[`bench/results/summary.md`](bench/results/summary.md), and v1 vs v2 per category in
+[`bench/results/compare_v1_v2.md`](bench/results/compare_v1_v2.md).
 
 ## Setup on any computer
 
@@ -134,7 +147,7 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
 
 ## Tools
 
-**Browsing:** `browser_navigate` (also takes `back`/`forward`/`reload`), `browser_snapshot`, `browser_click`,
+**Browsing:** `browser_navigate` (also takes `back`/`forward`/`reload`), `browser_snapshot`, `browser_find`, `browser_click`,
 `browser_type`, `browser_fill_form`, `browser_select_option`, `browser_hover`, `browser_drag`, `browser_press_key`,
 `browser_scroll`, `browser_wait_for`, `browser_take_screenshot`, `browser_evaluate`, `browser_tabs`,
 `browser_handle_dialog`, `browser_file_upload`, `browser_console_messages`, `browser_close`
@@ -151,6 +164,12 @@ Then reconnect the server in your client (`/mcp` in Claude Code).
 - **Every action returns the page state.** When the URL stays the same, it returns only the snapshot lines that
   changed (refs are stable across snapshots). On Wikipedia that's ~400 chars instead of ~30k. Errors include a full
   snapshot.
+- **Large pages get a card, not the whole page.** When a page's snapshot is over 8,000 characters, navigate (and
+  any action that falls back to a full page) returns its top (~4k characters), an outline of headings, landmarks and
+  tables with row counts, and the path of the full snapshot saved to a temp file. `browser_find` searches a fresh
+  snapshot of the whole page by text or regex and returns each match with its ref, 3 lines of context and its
+  ancestors, plus the total count (ported from Playwright MCP's, Apache-2.0). `browser_snapshot` with `target=<ref>`
+  (and optional `depth`) reads one section; with no arguments it still returns the full page.
 - **Dialogs can't hang a call.** Actions race against `dialog` and `filechooser` events and report the modal instead
   of blocking.
 - **Open page dialogs are called out.** When the snapshot holds a visible `dialog` or `alertdialog`, the result's first

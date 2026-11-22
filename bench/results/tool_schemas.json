@@ -2,7 +2,7 @@
  "cc-cloak": [
   {
    "name": "browser_navigate",
-   "description": "Open a URL in the current tab (launches the browser if needed), or pass back / forward / reload. Returns the page snapshot.",
+   "description": "Open a URL in the current tab (launches the browser if needed), or pass back / forward / reload. Returns the page snapshot (for a large page: its top and an outline; search the rest with browser_find).",
    "input_schema": {
     "type": "object",
     "properties": {
@@ -19,10 +19,45 @@
   },
   {
    "name": "browser_snapshot",
-   "description": "Accessibility snapshot of the current page with [ref=eN] handles. Every action already returns one; call this only to refresh.",
+   "description": "Accessibility snapshot of the current page with [ref=eN] handles. Every action already returns one; call this to refresh, or pass target to read one section (a table, form, list) of a large page.",
    "input_schema": {
     "type": "object",
-    "properties": {},
+    "properties": {
+     "target": {
+      "description": "Ref of the element to snapshot instead of the whole page",
+      "type": "string"
+     },
+     "depth": {
+      "description": "Limit how many levels deep the tree goes",
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+     }
+    },
+    "additionalProperties": false
+   }
+  },
+  {
+   "name": "browser_find",
+   "description": "Search the whole current page for text or a regex. Returns each match with its ref, nearby lines and parent elements, plus the total match count. Use it instead of reading a large page.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "description": "Case-insensitive text to find",
+      "type": "string"
+     },
+     "regex": {
+      "description": "Regular expression instead of text; wrap in slashes for flags, e.g. \"/pending/i\"",
+      "type": "string"
+     },
+     "maxResults": {
+      "description": "Matches to show (default 20); the total is always reported",
+      "type": "integer",
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991
+     }
+    },
     "additionalProperties": false
    }
   },

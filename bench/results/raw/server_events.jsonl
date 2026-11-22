@@ -239,3 +239,214 @@
 {"ts": 1795311543.3439124, "token": "87208c546d", "event": "create", "data": {"name": "Orion"}}
 {"ts": 1795311561.6329794, "token": "bb4971d2c3", "event": "publish", "data": {"draft": "4821"}}
 {"ts": 1795311565.137609, "token": "7342802f8b", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795320503.977013, "token": "1c31fb0fa5", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795320550.350338, "token": "a0ceb653df", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320555.8397207, "token": "574c34e03e", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795320568.5018797, "token": "ce6a4895b0", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795320569.5919385, "token": "9739f807c3", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795320587.9392343, "token": "83a2a5a2cf", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795320589.1022208, "token": "56a21915d5", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795320604.3966117, "token": "738b7a21dc", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795320610.6919973, "token": "1c7b9aa823", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795320616.8531673, "token": "3895afbfbf", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795320629.328586, "token": "8a28a3fffc", "event": "create", "data": {"name": "Orilon"}}
+{"ts": 1795320630.0327206, "token": "59cad3e650", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795320636.7606604, "token": "d213300290", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795320640.8390186, "token": "c6a7bda165", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795320645.3057806, "token": "8a28a3fffc", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795320646.9722397, "token": "2171ff0bb0", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795320653.143519, "token": "e56836a93f", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795320658.1003184, "token": "da8c0fff49", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795320666.6940062, "token": "cd081501ba", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795320675.0947745, "token": "521b99b5b8", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795320678.7782507, "token": "d526de057b", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795320687.38054, "token": "deeeab5c38", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795320690.9487674, "token": "e6e8178422", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795320712.1893897, "token": "a13b2785c4", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795320715.9368377, "token": "fa2a24b7dc", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795320723.259103, "token": "068bb01500", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795320729.0393903, "token": "2db43a6d41", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795320731.9621334, "token": "a9a9ef02f4", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795320756.2289827, "token": "c998a93e8a", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795320760.9430544, "token": "27a37b31bb", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320784.0996637, "token": "f1568cefb1", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320787.9568045, "token": "b11b9e7888", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795320793.5444942, "token": "c0937b86d5", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320805.9425087, "token": "7b138ea478", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795320824.582297, "token": "e87454b18f", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320824.791071, "token": "fd4d0432c9", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795320841.0221684, "token": "cd0133e4bb", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795320856.098624, "token": "6e02bb62e8", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795320876.4690022, "token": "789d061751", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795320895.562355, "token": "a7ff77787e", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795320905.9746184, "token": "61fe1e763c", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795320909.110056, "token": "f76aacdb90", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795320913.0176768, "token": "b0ff642bd8", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795320939.9215012, "token": "c545bfdc3b", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795320948.8406837, "token": "c70edb6c4e", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795320955.719352, "token": "c70edb6c4e", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795320958.5408006, "token": "d14f3ca850", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795320969.7855132, "token": "4dd3c917ce", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795320978.1713119, "token": "bbd6d8e54f", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795320991.0383775, "token": "14ea9ac5e3", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795320996.6217732, "token": "e9485a635e", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795320996.6527774, "token": "3e35ebd76e", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321029.7589982, "token": "8c29b90319", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795321038.5564644, "token": "5e04866bae", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795321039.9483376, "token": "f588e6e60b", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795321041.8461874, "token": "996cf1592c", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795321043.5684328, "token": "de7d5515be", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321051.5084789, "token": "7600c14dbe", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321056.4798417, "token": "809d1f3124", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795321061.5933213, "token": "dcfd1cafd1", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795321083.0468047, "token": "2895a2e1b1", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795321130.9386408, "token": "e1cfa5e2f7", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795321172.8333156, "token": "d7bbf70537", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795321180.63747, "token": "358d60aa26", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795321315.5154579, "token": "b75c2bfe2e", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795321332.0900118, "token": "b15e51b228", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321366.5017545, "token": "25ccbc4566", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795321390.3467941, "token": "ffb3ca5b9b", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321411.7940407, "token": "140568be66", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795321728.2387044, "token": "1ece2c1e02", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795321749.8782768, "token": "271782e78e", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795321775.4494247, "token": "0561058319", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795321780.162106, "token": "62ece16c31", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795321782.8145478, "token": "0d9c3577bd", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795321801.0027018, "token": "b5e72d0968", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795321820.5202472, "token": "3f804f3de4", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795321823.3726573, "token": "d9a3ba0a98", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795321842.5331333, "token": "0a1c60549f", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795321869.2072463, "token": "c28e578d64", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795321869.4989183, "token": "610951407a", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795321881.6124184, "token": "c5e766a8ba", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795321885.2795665, "token": "c11fa6c9fe", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795321893.9269469, "token": "d5e0e58687", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795321894.686972, "token": "c11fa6c9fe", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795321922.164014, "token": "42846c3cad", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795321939.3337612, "token": "5a2e2fada6", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795321951.8059654, "token": "d6e21988f9", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795321953.7841034, "token": "80b623ca52", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795321978.0866165, "token": "6e33e5599f", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795321980.5018466, "token": "964a6a8868", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795321986.2013133, "token": "b94ed19ace", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795321992.7529893, "token": "5c693635ce", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795321995.7043045, "token": "02bb5a90b4", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795322008.664289, "token": "21e1b0b451", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322015.7441185, "token": "1ac1ee75fe", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795322018.7338948, "token": "1cd648bdc1", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795322027.603257, "token": "f9d1da2106", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322045.4086564, "token": "52ebd5502b", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322055.441472, "token": "766441c540", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795322056.702479, "token": "52ebd5502b", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322090.3153632, "token": "42af0e2672", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322104.028431, "token": "c85573a7bc", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795322114.6508756, "token": "be2ddcc2d3", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322117.8492212, "token": "e9c426b605", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322128.628868, "token": "961d252577", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322161.8155246, "token": "887859afdb", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322170.4248, "token": "8bedf7ce2d", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795322193.017844, "token": "d39b8e01e1", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322203.5939264, "token": "01494d1161", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795322213.4460878, "token": "10f14bafe8", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322267.8029265, "token": "824ffae1d7", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795322281.0700722, "token": "3ae4dd4497", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322401.287511, "token": "14b4a4de1c", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322424.3210342, "token": "045b28839b", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795322437.971111, "token": "577c5e5e90", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322448.296442, "token": "c65bba7d65", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795322455.134548, "token": "0e63bd949f", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795322499.3446028, "token": "a5b72adb20", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795322532.0029454, "token": "d6d9e863a2", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322567.2471128, "token": "154add7f2d", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795322580.8567271, "token": "63360b44b4", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795322587.2536454, "token": "7a571cd02a", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795322587.5814083, "token": "9c47ec8775", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322602.0029738, "token": "77c923aad9", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322607.3796628, "token": "9edf1c14d0", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795322613.942639, "token": "c3a3aa6ca4", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322614.914611, "token": "ffff3db019", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795322630.720977, "token": "6ebf121f67", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795322630.74712, "token": "cecddb8000", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322637.0562687, "token": "af88519e67", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322656.454454, "token": "f1049322aa", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795322657.0286338, "token": "ed5a88c8dc", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322657.070024, "token": "0063bae0fd", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795322673.3199983, "token": "eff9e3cf43", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322678.6565602, "token": "52805df209", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795322723.8887906, "token": "e1345b013f", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795322724.0384266, "token": "d1f33e1c43", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322730.0323927, "token": "1208724d09", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322731.3718789, "token": "922627d42a", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322736.8240027, "token": "eff9e3cf43", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322746.0341747, "token": "ba4876f439", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795322748.9386485, "token": "8a8868f8c7", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795322752.4687564, "token": "43406fc5a1", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322771.9323273, "token": "a56383b8b9", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795322787.302952, "token": "4a9f05c7e6", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322788.8345835, "token": "4030f912cb", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795322802.0144522, "token": "2ace54f074", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322813.058753, "token": "3b9bb8268f", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795322817.244906, "token": "471fe2b444", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795322822.7045555, "token": "076d3096f1", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795322830.8731258, "token": "e6fae5be57", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795322841.4126134, "token": "c11fcb0fd8", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795322842.1913574, "token": "be4ddff2cc", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795322848.5509942, "token": "4599631d7a", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795322848.9766278, "token": "7db38356df", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322855.877638, "token": "33a1e0c3c3", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322866.9902308, "token": "a9d326567d", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322877.3875053, "token": "3456ef087a", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795322878.6135228, "token": "a82ad15516", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795322886.358763, "token": "97e807f950", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}
+{"ts": 1795322886.8168411, "token": "7181652bfe", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795322903.5305622, "token": "66a34dd674", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795322937.6718116, "token": "7b93328779", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795322938.07963, "token": "cd4668b6a1", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795322946.3349652, "token": "5d462d6d7b", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795322948.6007972, "token": "f4f5e9079a", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795322956.6011004, "token": "c9b0454a6e", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795322961.869715, "token": "80fe572faf", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795322970.1189947, "token": "bad37c7c27", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795322981.8167913, "token": "965a0938ec", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795322985.9958696, "token": "f8cf7a396a", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795322989.6741025, "token": "e16393dd31", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795323001.8962638, "token": "826366fc48", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795323010.9825697, "token": "e2e454eebb", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795323012.5855684, "token": "f9afceb082", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795323020.1108763, "token": "965a0938ec", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795323024.0808783, "token": "965a0938ec", "event": "archive", "data": {}}
+{"ts": 1795323031.3021865, "token": "73f3c11aa8", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795323044.90913, "token": "2b1a60aa97", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795323062.4396493, "token": "81627a67c5", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795323069.4015372, "token": "0b30274b3f", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795323081.7988951, "token": "ed07c617b9", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795323103.1457193, "token": "b9fa6804fc", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795323105.748832, "token": "5066369c74", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795323121.9182148, "token": "d88b24f39b", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795323127.87219, "token": "c0e6b5d681", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795323128.658915, "token": "4497ff50f6", "event": "access", "data": {"code": "ZK-73"}}
+{"ts": 1795323131.3607593, "token": "7110b402e2", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795323150.3645816, "token": "dea6156ce1", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795323161.2366393, "token": "7184078c00", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795323175.583512, "token": "4fd0bfb3ea", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795323195.0881512, "token": "b4959e5160", "event": "contact", "data": {"name": "Ada Lovelace", "email": "ada@example.test", "topic": "Technical", "priority": "Urgent", "message": "Engine output is off by one.", "newsletter": "yes"}}
+{"ts": 1795323203.8433769, "token": "ff69ec4054", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795323220.08053, "token": "8b6c28b655", "event": "like", "data": {"article": "tide-pools"}}
+{"ts": 1795323228.3293557, "token": "198ecf7d55", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795323233.7491918, "token": "43e8666c04", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795323235.7113643, "token": "080aa830f9", "event": "rename", "data": {"name": "Atlas"}}
+{"ts": 1795323262.3639493, "token": "607d02e106", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795323269.2706184, "token": "543144365f", "event": "country", "data": {"country": "Uruguay"}}
+{"ts": 1795323285.2362204, "token": "e24c034d44", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795323285.5042393, "token": "9b43a29954", "event": "delete", "data": {"file": "Old report.pdf"}}
+{"ts": 1795323296.3348677, "token": "7a0c4754be", "event": "confirm", "data": {"order": "5530"}}
+{"ts": 1795323307.6628973, "token": "b8ae89d2e3", "event": "coupon", "data": {"code": "TAB-5521"}}
+{"ts": 1795323313.2992327, "token": "4532fc0fd8", "event": "signup", "data": {"username": "quietfox", "password": "Lantern-88", "terms": "accepted"}}
+{"ts": 1795323324.5975642, "token": "8843f1fed9", "event": "archive", "data": {"ticket": "T-0842"}}
+{"ts": 1795323331.9680314, "token": "6eac541930", "event": "gift", "data": {"message": "Happy birthday, Sam!"}}
+{"ts": 1795323342.7076125, "token": "3a311d57cb", "event": "create", "data": {"name": ""}}
+{"ts": 1795323343.9560475, "token": "404b378fec", "event": "wizard", "data": {"company": "Northwind Bakery", "plan": "Team", "cycle": "Yearly"}}
+{"ts": 1795323356.2654881, "token": "3a311d57cb", "event": "create", "data": {"name": "Orion"}}
+{"ts": 1795323359.3724108, "token": "24eb175620", "event": "publish", "data": {"draft": "4821"}}
+{"ts": 1795323368.1816437, "token": "fcdf7436ae", "event": "booking", "data": {"date": "2026-12-24", "time": "19:30", "guests": "4", "notes": "Window seat please"}}

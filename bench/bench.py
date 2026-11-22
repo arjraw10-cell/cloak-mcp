@@ -1,5 +1,5 @@
 """Benchmark runner. usage:
-  python bench.py dev|pilot|full [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
+  python bench.py dev|pilot|full|full2 [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
                              [--configs cc-cloak,...] [--tasks id,...] [--repeats N]
 Writes results/raw/{runs,calls,api_errors}.jsonl and one transcript per run. Finished runs
 (in runs.jsonl) are skipped on restart; runs that died from API errors are re-queued.
@@ -268,7 +268,7 @@ def plan(phase, bonus, configs, task_ids, repeats):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("phase", choices=["dev", "pilot", "full"])  # dev = harness checks, not analysed
+    ap.add_argument("phase", choices=["dev", "pilot", "full", "full2"])  # dev = harness checks; full2 = rerun with cloak-mcp v2
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--bonus", default="")
     ap.add_argument("--configs", default="")
@@ -276,7 +276,7 @@ def main():
     ap.add_argument("--repeats", type=int)
     a = ap.parse_args()
     split = lambda s: [x for x in s.split(",") if x]
-    specs = plan(a.phase, split(a.bonus), split(a.configs), split(a.tasks), a.repeats or (2 if a.phase == "full" else 1))
+    specs = plan(a.phase, split(a.bonus), split(a.configs), split(a.tasks), a.repeats or (2 if a.phase.startswith("full") else 1))
     if not anthropic_key():
         skipped = [s for s in specs if s["model"] == CORE_MODEL]
         specs = [s for s in specs if s["model"] != CORE_MODEL]

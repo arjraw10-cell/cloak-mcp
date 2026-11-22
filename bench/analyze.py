@@ -9,7 +9,10 @@ import bench
 
 PHASE = sys.argv[1] if len(sys.argv) > 1 else "full"
 runs = [r for r in bench.read_jsonl(bench.RUNS) if r["phase"] == PHASE]
-schema = json.loads((bench.ROOT / "results" / "schema_tokens.json").read_text())
+# v1 ("full") was measured with cloak-mcp 96aa864; schema_tokens.json now holds the current (v2) numbers.
+v1_schema = bench.ROOT / "results" / "schema_tokens_v1.json"
+schema = json.loads((v1_schema if PHASE == "full" and v1_schema.is_file()
+                     else bench.ROOT / "results" / "schema_tokens.json").read_text())
 api_errors = [r for r in bench.read_jsonl(bench.API_ERRORS) if r["phase"] == PHASE]
 
 
@@ -59,8 +62,9 @@ md = [f"# Results ({PHASE} phase)", "",
       f"total spend ${bench.spent():.2f}.", "",
       "Wall-clock times are confounded: cloak-mcp, devinwangd and Kairos use humanized (deliberately slower) input; "
       "Playwright MCP does not.", ""]
-notes = bench.ROOT / "results" / "notes.md"  # hand-written findings, kept separate so this file stays generated
-if PHASE == "full" and notes.is_file():
+# hand-written findings, kept separate so the summary stays generated
+notes = bench.ROOT / "results" / ("notes.md" if PHASE == "full" else f"notes_{PHASE}.md")
+if notes.is_file():
     md += [notes.read_text(encoding="utf-8")]
 md += ["## Static tool-schema cost", "", "| layer | tools | Anthropic tokens | tiktoken o200k |", "|---|---|---|---|"]
 md += [f"| {k} | {v['tools']} | {v['anthropic_tokens'] or '-'} | {v['tiktoken_o200k']} |" for k, v in schema.items()]

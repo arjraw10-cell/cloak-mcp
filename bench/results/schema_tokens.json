@@ -1,8 +1,8 @@
 {
   "cc-cloak": {
-    "tools": 20,
-    "tiktoken_o200k": 2036,
-    "anthropic_tokens": 3379
+    "tools": 21,
+    "tiktoken_o200k": 2307,
+    "anthropic_tokens": 3764
   },
   "cc-devin": {
     "tools": 80,
