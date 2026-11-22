@@ -189,7 +189,7 @@ export type SnapshotMode = "full" | "page" | "diff" | "none";
 const LARGE_PAGE_CHARS = 8_000;
 const CARD_HEAD_CHARS = 4_000;
 const OUTLINE_LINES = 40;
-const OUTLINE_ROLE = /^\s*- (heading|table|grid|treegrid|list|listbox|form|search|navigation|main|region|tablist|dialog|alertdialog)\b/;
+const OUTLINE_ROLE = /^\s*- (heading|table|grid|treegrid|list|listbox|combobox|form|search|navigation|main|region|tablist|dialog|alertdialog)\b/;
 const ROW_ROLE = /^\s*- (row|listitem|option|treeitem)\b/;
 
 const indentOf = (line: string) => line.length - line.trimStart().length;
@@ -207,16 +207,17 @@ function saveSnapshot(snap: string): string {
   return file;
 }
 
-/** Headings, landmarks, forms, and tables/lists with their row counts. */
+/** Headings, landmarks, forms, dropdowns, and tables/lists with their row (or option) counts. */
 function outline(lines: string[]): string[] {
   const out: string[] = [];
   for (let i = 0; i < lines.length && out.length < OUTLINE_LINES; i++) {
     if (!OUTLINE_ROLE.test(lines[i])) continue;
     let rows = 0;
-    if (/- (table|grid|treegrid|list|listbox)\b/.test(lines[i])) {
+    if (/- (table|grid|treegrid|list|listbox|combobox)\b/.test(lines[i])) {
       for (let j = i + 1; j < lines.length && indentOf(lines[j]) > indentOf(lines[i]); j++) if (ROW_ROLE.test(lines[j])) rows++;
     }
-    out.push(clip(lines[i], 160) + (rows ? ` (${rows} rows)` : ""));
+    const unit = /- (combobox|listbox)\b/.test(lines[i]) ? "options" : "rows";
+    out.push(clip(lines[i], 160) + (rows ? ` (${rows} ${unit})` : ""));
   }
   return out;
 }
@@ -288,6 +289,7 @@ export async function sectionSnapshot(session: Session, a: { target?: string; de
 }
 
 const FIND_CONTEXT = 3;
+const FIND_ROW_LINES = 40; // rows longer than this fall back to FIND_CONTEXT lines around the match
 const FIND_DEFAULT_RESULTS = 20;
 
 /**
@@ -328,14 +330,36 @@ export async function findInPage(session: Session, a: { text?: string; regex?: s
     return out.reverse();
   };
 
-  const matched = lines.flatMap((l, i) => (at(l) >= 0 ? [i] : []));
+  let matched = lines.flatMap((l, i) => (at(l) >= 0 ? [i] : []));
+  let note = "";
+  if (!matched.length && a.text?.includes("|")) {
+    // Models often write alternations as text: search for each part instead.
+    const parts = a.text.split("|").map((p) => p.trim().toLowerCase()).filter(Boolean);
+    at = (l) => {
+      const hits = parts.map((p) => l.toLowerCase().indexOf(p)).filter((i) => i >= 0);
+      return hits.length ? Math.min(...hits) : -1;
+    };
+    matched = lines.flatMap((l, i) => (at(l) >= 0 ? [i] : []));
+    note = `No literal match for ${query}; showing lines matching any of ${parts.map((p) => `"${p}"`).join(", ")} (use regex for a regular expression).\n`;
+  }
   if (!matched.length) return text(`Page URL: ${page.url()}\nNo matches for ${query}.`);
   const shown = matched.slice(0, a.maxResults ?? FIND_DEFAULT_RESULTS);
 
+  /** The whole table row / list item holding the match (with its own buttons), else a few lines around it. */
+  const context = (m: number): { start: number; end: number } => {
+    for (const r of [m, ...ancestors(m).reverse()]) {
+      if (!ROW_ROLE.test(lines[r])) continue;
+      let end = r;
+      while (end + 1 < lines.length && indents[end + 1] > indents[r]) end++;
+      if (end - r < FIND_ROW_LINES) return { start: r, end };
+      break;
+    }
+    return { start: Math.max(0, m - FIND_CONTEXT), end: Math.min(lines.length - 1, m + FIND_CONTEXT) };
+  };
+
   const windows: Array<{ start: number; end: number }> = [];
   for (const m of shown) {
-    const start = Math.max(0, m - FIND_CONTEXT);
-    const end = Math.min(lines.length - 1, m + FIND_CONTEXT);
+    const { start, end } = context(m);
     const last = windows[windows.length - 1];
     if (last && start <= last.end + 1) last.end = Math.max(last.end, end);
     else windows.push({ start, end });
@@ -364,7 +388,7 @@ export async function findInPage(session: Session, a: { text?: string; regex?: s
     ? `Found ${matched.length} ${word} for ${query} (showing the first ${shown.length}; raise maxResults for more):`
     : `Found ${matched.length} ${word} for ${query}:`;
   const body = truncate(snippets.join("\n\n----\n\n"), session.cfg.maxSnapshotChars);
-  return text(`Page URL: ${page.url()}\n${header}\n\n${body}`);
+  return text(`Page URL: ${page.url()}\n${note}${header}\n\n${body}`);
 }
 
 /**
