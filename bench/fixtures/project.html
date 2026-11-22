@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Project settings</title><script src="bench.js"></script></head><body>
+<h1>Project: <span id="pname">Untitled-7</span></h1>
+<p><button id="rename">Rename project</button> <button onclick="alert('Archiving is disabled for this project.')">Archive project</button></p>
+<p id="status"></p>
+<script>
+document.getElementById('rename').onclick = () => {
+  const n = prompt('New project name:', 'Untitled-7');
+  if (n) post('rename', {name: n}).then(() => document.getElementById('pname').textContent = n);
+};
+</script></body></html>

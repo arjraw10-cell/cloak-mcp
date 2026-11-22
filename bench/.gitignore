@@ -1,0 +1,7 @@
+.venv/
+vendor/
+mcp-servers/node_modules/
+work/
+tmp/
+profiles/
+__pycache__/

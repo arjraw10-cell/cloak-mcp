@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Files</title><script src="bench.js"></script></head><body>
+<h1>Shared files</h1><p id="status"></p>
+<table>
+<tr><th>Name</th><th></th></tr>
+<tr><td>Budget 2027.xlsx</td><td><button data-f="Budget 2027.xlsx">Delete</button></td></tr>
+<tr><td>Old report.pdf</td><td><button data-f="Old report.pdf">Delete</button></td></tr>
+<tr><td>Old report (final).pdf</td><td><button data-f="Old report (final).pdf">Delete</button></td></tr>
+<tr><td>Team photo.jpg</td><td><button data-f="Team photo.jpg">Delete</button></td></tr>
+</table>
+<script>
+document.querySelectorAll('button[data-f]').forEach(b => b.onclick = () => {
+  const f = b.dataset.f;
+  if (confirm("Delete '" + f + "'? This cannot be undone.")) post('delete', {file: f}).then(() => b.closest('tr').remove());
+});
+</script></body></html>

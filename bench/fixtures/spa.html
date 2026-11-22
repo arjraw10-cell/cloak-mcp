@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Projects</title><script src="bench.js"></script></head><body>
+<main><div role="progressbar" aria-label="Loading" style="height:4px;background:#48f"></div></main>
+<p id="status"></p>
+<script>
+// Loads like a client-side app: ~2 s of loading, then the list renders.
+const main = document.querySelector('main');
+function list() { main.innerHTML = '<h1>Projects</h1><p>No projects yet.</p><button id="new">New project</button>';
+  document.getElementById('new').onclick = form; }
+function form() {
+  // The view re-renders, so earlier element references go stale.
+  main.innerHTML = '<h1>New project</h1><label for="name">Project name</label> <input id="name"> <button id="create">Create</button>';
+  const field = document.getElementById('name');
+  // Typed text is applied late, as a framework with async state does.
+  let pending = '', timer;
+  field.addEventListener('keydown', e => {
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) pending += e.key;
+    else if (e.key === 'Backspace') pending = pending.slice(0, -1);
+    else return;
+    e.preventDefault(); clearTimeout(timer); timer = setTimeout(() => { field.value = pending; }, 700);
+  });
+  field.addEventListener('input', () => { pending = field.value; });
+  document.getElementById('create').onclick = () => post('create', {name: field.value}).then(() => { main.innerHTML = '<h1>Projects</h1><p>Created ' + field.value + '.</p>'; });
+}
+setTimeout(list, 2000);
+</script></body></html>

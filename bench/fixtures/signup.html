@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Create account</title>
+<style>
+.terms { position: relative; display: inline-block; padding-left: 28px; }
+.terms input { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: 0; }
+.terms .box { position: absolute; left: 0; top: 0; width: 18px; height: 18px; background: #3a7; border-radius: 4px; z-index: 1; }
+</style></head><body>
+<h1>Create your account</h1>
+<form method="post" action="api/signup">
+<p><label for="u">Username</label> <input id="u" name="username" required></p>
+<p><label for="p">Password</label> <input id="p" name="password" type="password" required></p>
+<p><label class="terms"><input type="checkbox" name="terms" value="accepted" required><span class="box"></span>I accept the terms of service</label></p>
+<p><button type="submit">Create account</button></p>
+</form></body></html>

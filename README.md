@@ -4,9 +4,33 @@ A lean MCP server for [CloakBrowser](https://github.com/CloakHQ/CloakBrowser), a
 It gives AI agents (Claude Code, Cursor, any MCP client) a real browser that passes bot detection, moves the mouse
 and types like a human, and keeps logins in persistent profiles.
 
-It started as a rewrite of `@devinwangd/cloak-browser-mcp` 0.1.x. That server had 80 tools (~7.4k tokens), and in
-it a JS `alert()` could freeze the session, many snapshot refs couldn't be clicked, and every action re-sent the
-whole page. This one has 20 tools (~1.75k tokens) and none of those problems.
+It started as a rewrite of `@devinwangd/cloak-browser-mcp` 0.1.x. That server had 80 tools (13.2k schema tokens),
+and in it a JS `alert()` could freeze the session, many snapshot refs couldn't be clicked, and every action re-sent
+the whole page. This one has 20 tools (3.4k schema tokens) and none of those problems.
+
+## Benchmark
+
+30 browser tasks (forms, dialogs, iframes/tabs, large pages, dynamic SPAs, plus 8 on public practice sites), each
+checked by code, not an LLM judge. Same model everywhere (`claude-haiku-5-5`, effort low), same CloakBrowser
+binary, 60 runs per config, November 2026:
+
+| Browser layer | Success (95% CI) | Hangs | Tool errors / run | Tokens per success | Tool calls / task | Schema tokens |
+|---|---|---|---|---|---|---|
+| **cloak-mcp** (Claude Code) | 97% (89–99) | 0% | **0.07** | 35.8k | **4.5** | 3,379 |
+| Playwright MCP 0.0.86 (Claude Code) | 98% (91–100) | 2% | 0.25 | 38.6k | 5.8 | 7,083 |
+| @devinwangd/cloak-browser-mcp, 80 tools (Claude Code) | 83% (72–91) | 17% | 0.30 | 75.1k | 5.9 | 13,213 |
+| Kairos native browser tools (Kairos) | 100% (94–100) | 0% | 0.18 | 35.6k | 4.6 | 3,001 |
+
+- **Dialogs:** devinwangd froze on all 10 dialog runs (`alert`, `confirm`, `prompt`) until the 5-minute kill and
+  failed nothing else. cloak-mcp's click on the same pop-ups returned in under a second, saying which dialog was open.
+- **Where cloak-mcp loses:** large pages. It used 117k tokens per successful large-page task vs 42k for Playwright
+  MCP, because `browser_navigate` inlines a full snapshot (up to ~10k tokens) on every load.
+- cloak-mcp, Playwright MCP and Kairos are within noise of each other on success. Wall-clock time is not compared:
+  every layer except Playwright MCP types and clicks with deliberately human-like timing.
+
+Whole run: 420 runs, $1.33. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/); method and
+rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md), full tables and failure excerpts in
+[`bench/results/summary.md`](bench/results/summary.md).
 
 ## Setup on any computer
 

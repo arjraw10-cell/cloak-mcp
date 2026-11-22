@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Contact support</title></head><body>
+<h1>Contact support</h1>
+<form method="post" action="api/contact">
+<p><label for="name">Full name</label> <input id="name" name="name"></p>
+<p><label for="email">Email</label> <input id="email" name="email" type="email"></p>
+<p><label for="topic">Topic</label> <select id="topic" name="topic"><option value="">Choose...</option><option>Billing</option><option>Technical</option><option>Sales</option></select></p>
+<fieldset><legend>Priority</legend>
+<label><input type="radio" name="priority" value="Low"> Low</label>
+<label><input type="radio" name="priority" value="Normal" checked> Normal</label>
+<label><input type="radio" name="priority" value="Urgent"> Urgent</label></fieldset>
+<p><label for="message">Message</label><br><textarea id="message" name="message" rows="4" cols="40"></textarea></p>
+<p><label><input type="checkbox" name="newsletter" value="yes"> Subscribe to the newsletter</label></p>
+<p><button type="submit">Send message</button></p>
+</form></body></html>

@@ -1,0 +1,17 @@
+{
+  "name": "mcp-servers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@devinwangd/cloak-browser-mcp": "^0.1.4",
+    "@playwright/mcp": "^0.0.86"
+  }
+}

@@ -1,0 +1,7 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Editor</title><script src="bench.js"></script></head><body>
+<h1>Newsletter editor</h1>
+<textarea rows="5" cols="50">Hello subscribers, here is this month's news...</textarea>
+<p><button onclick="alert('Draft saved as #4821')">Save draft</button></p>
+<p><label for="d">Draft number</label> <input id="d"> <button onclick="post('publish',{draft:document.getElementById('d').value})">Publish</button></p>
+<p id="status"></p>
+</body></html>

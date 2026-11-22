@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Book a table - The Gull</title></head><body>
+<h1>The Gull - book a table</h1>
+<form method="post" action="api/booking">
+<p><label for="date">Date</label> <input id="date" name="date" type="date" required></p>
+<p><label for="time">Time</label> <select id="time" name="time"><option>18:00</option><option>19:30</option><option>21:00</option></select></p>
+<p><label for="guests">Guests</label> <input id="guests" name="guests" type="number" min="1" max="12" value="2"></p>
+<p><label for="notes">Notes for the restaurant</label><br><textarea id="notes" name="notes" rows="3" cols="40"></textarea></p>
+<p><button type="submit">Request booking</button></p>
+</form></body></html>

@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Onboarding</title><script src="bench.js"></script>
+<style>
+.listbox { border: 1px solid #999; width: 220px; }
+.listbox div { padding: 6px; cursor: pointer; }
+.listbox div[aria-selected="true"] { background: #36c; color: #fff; }
+</style></head><body>
+<h1>Set up your workspace</h1>
+<section id="step1"><h2>Step 1 of 2: Company</h2>
+<p><label for="company">Company name</label> <input id="company"></p>
+<p id="plan-label">Plan</p>
+<div class="listbox" role="listbox" aria-labelledby="plan-label">
+<div role="option" aria-selected="false" data-v="Starter">Starter - free</div>
+<div role="option" aria-selected="false" data-v="Team">Team - $12/user</div>
+<div role="option" aria-selected="false" data-v="Enterprise">Enterprise - contact us</div>
+</div>
+<p id="err1" style="color:#b00"></p>
+<button id="next">Next</button></section>
+<section id="step2" hidden><h2>Step 2 of 2: Billing</h2>
+<fieldset><legend>Billing cycle</legend>
+<label><input type="radio" name="cycle" value="Monthly" checked> Monthly</label>
+<label><input type="radio" name="cycle" value="Yearly"> Yearly (2 months free)</label></fieldset>
+<button id="back">Back</button> <button id="finish">Finish setup</button></section>
+<p id="status"></p>
+<script>
+let plan = null;
+document.querySelectorAll('[role=option]').forEach(o => o.addEventListener('click', () => {
+  document.querySelectorAll('[role=option]').forEach(x => x.setAttribute('aria-selected', 'false'));
+  o.setAttribute('aria-selected', 'true'); plan = o.dataset.v;
+}));
+document.getElementById('next').onclick = () => {
+  if (!document.getElementById('company').value || !plan) { document.getElementById('err1').textContent = 'Enter a company name and choose a plan.'; return; }
+  document.getElementById('step1').hidden = true; document.getElementById('step2').hidden = false;
+};
+document.getElementById('back').onclick = () => { document.getElementById('step2').hidden = true; document.getElementById('step1').hidden = false; };
+document.getElementById('finish').onclick = () => post('wizard', {company: document.getElementById('company').value, plan,
+  cycle: document.querySelector('input[name=cycle]:checked').value}).then(() => { document.getElementById('step2').hidden = true; document.getElementById('status').textContent = 'Workspace created.'; });
+</script></body></html>
