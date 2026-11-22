@@ -1,3 +1,6 @@
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { Locator, Page } from "playwright-core";
 import type { Session } from "./session.js";
 
@@ -176,7 +179,63 @@ export function openDialog(snap: string): { label: string; ref: string; close?: 
   return { label: name ? `"${name}"` : "(no name)", ref: lines[at].match(/\[ref=(\w+)\]/)![1], close };
 }
 
-export type SnapshotMode = "full" | "diff" | "none";
+/**
+ * full: the whole snapshot (explicit browser_snapshot). page: the whole snapshot for a small page, a short
+ * card for a large one. diff: only changed lines on the same page, else as page. none: no snapshot.
+ */
+export type SnapshotMode = "full" | "page" | "diff" | "none";
+
+/** Snapshots longer than this come back as a card: the top of the page, an outline, and how to search. */
+const LARGE_PAGE_CHARS = 8_000;
+const CARD_HEAD_CHARS = 4_000;
+const OUTLINE_LINES = 40;
+const OUTLINE_ROLE = /^\s*- (heading|table|grid|treegrid|list|listbox|form|search|navigation|main|region|tablist|dialog|alertdialog)\b/;
+const ROW_ROLE = /^\s*- (row|listitem|option|treeitem)\b/;
+
+const indentOf = (line: string) => line.length - line.trimStart().length;
+const clip = (line: string, n = 300) => (line.length > n ? `${line.slice(0, n)}…` : line);
+
+let savedSnapshots = 0;
+/** Write the full snapshot to a temp file (the last 10 are kept) so clients that can read files can grep it. */
+function saveSnapshot(snap: string): string {
+  const dir = join(tmpdir(), "cloak-mcp-snapshots", String(process.pid));
+  mkdirSync(dir, { recursive: true });
+  const n = ++savedSnapshots;
+  const file = join(dir, `page-${n}.yml`);
+  writeFileSync(file, snap);
+  rmSync(join(dir, `page-${n - 10}.yml`), { force: true });
+  return file;
+}
+
+/** Headings, landmarks, forms, and tables/lists with their row counts. */
+function outline(lines: string[]): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < lines.length && out.length < OUTLINE_LINES; i++) {
+    if (!OUTLINE_ROLE.test(lines[i])) continue;
+    let rows = 0;
+    if (/- (table|grid|treegrid|list|listbox)\b/.test(lines[i])) {
+      for (let j = i + 1; j < lines.length && indentOf(lines[j]) > indentOf(lines[i]); j++) if (ROW_ROLE.test(lines[j])) rows++;
+    }
+    out.push(clip(lines[i], 160) + (rows ? ` (${rows} rows)` : ""));
+  }
+  return out;
+}
+
+function largePageCard(lines: string[], snap: string): string {
+  let n = 0;
+  for (let size = 0; n < lines.length && size + lines[n].length + 1 <= CARD_HEAD_CHARS; n++) size += lines[n].length + 1;
+  const head = n ? lines.slice(0, n).join("\n") : clip(lines[0], CARD_HEAD_CHARS);
+  const structure = outline(lines);
+  return [
+    `Snapshot (large page: ${lines.length} lines, ${snap.length} chars; only the top is shown):`,
+    head,
+    `… ${lines.length - Math.max(n, 1)} more lines.`,
+    ...(structure.length ? ["", "Page outline:", ...structure] : []),
+    "",
+    "To read the rest, use browser_find (text or regex; returns every match with its ref and context, plus the total count) " +
+      `or browser_snapshot with target=<ref> for one section. Full snapshot saved to ${saveSnapshot(snap)}`,
+  ].join("\n");
+}
 
 /**
  * Playwright's AI snapshot: real ARIA roles/names, [ref=eN] handles, iframes included.
@@ -199,10 +258,111 @@ function snapshotText(session: Session, page: Page, snap: string, mode: Snapshot
       return `Snapshot changes (new or updated lines; ${removed} lines gone; unchanged parts omitted, browser_snapshot shows the full page):\n${diff}`;
     }
   }
-  const body = snap.length > max
-    ? `${snap.slice(0, max)}\n… [snapshot truncated: ${snap.length - max} more chars. Scroll, or use browser_evaluate to read specific content]`
-    : snap;
-  return `Snapshot:\n${body}`;
+  if (mode !== "full" && snap.length > LARGE_PAGE_CHARS) return largePageCard(lines, snap);
+  return `Snapshot:\n${truncate(snap, max)}`;
+}
+
+function truncate(snap: string, max: number): string {
+  if (snap.length <= max) return snap;
+  return `${snap.slice(0, max)}\n… [snapshot truncated: ${snap.length - max} more chars. browser_find searches the whole page; full snapshot saved to ${saveSnapshot(snap)}]`;
+}
+
+/**
+ * Snapshot of one element (target ref) and/or to a limited depth. It doesn't replace the diff baseline,
+ * since it is only part of the page.
+ */
+export async function sectionSnapshot(session: Session, a: { target?: string; depth?: number }): Promise<ToolResult> {
+  const page = await session.page();
+  if (session.dialog) return text(`A ${session.dialog.type()} dialog is open ("${session.dialog.message().slice(0, 200)}"). Call browser_handle_dialog first.`, true);
+  try {
+    const opts = { mode: "ai" as const, depth: a.depth, timeout: 10_000 };
+    const snap = a.target ? await locate(page, a.target).ariaSnapshot(opts) : await page.ariaSnapshot(opts);
+    const what = [a.target && `element ${a.target}`, a.depth && `depth ${a.depth}`].filter(Boolean).join(", ");
+    return text(`Page URL: ${page.url()}\nSnapshot (${what}):\n${truncate(snap, session.cfg.maxSnapshotChars)}`);
+  } catch (e) {
+    const why = explain(e, a.target).replace(/ Use a ref from the fresh snapshot below\.$/, " Get a current ref from browser_find or browser_snapshot.");
+    return text(`Error: ${why}`, true);
+  }
+}
+
+const FIND_CONTEXT = 3;
+const FIND_DEFAULT_RESULTS = 20;
+
+/**
+ * Search a fresh AI snapshot of the whole page, line by line. Each match is shown with FIND_CONTEXT lines
+ * around it under its ancestor path, so a table cell reads as table > row > cell with refs.
+ * Ported from Playwright MCP's browser_find (Apache-2.0, Microsoft); adds a default result limit and
+ * clips very long lines around the match.
+ */
+export async function findInPage(session: Session, a: { text?: string; regex?: string; maxResults?: number }): Promise<ToolResult> {
+  if (!a.text === !a.regex) return text('Pass exactly one of "text" or "regex".', true);
+  let at: (line: string) => number;
+  let query: string;
+  if (a.regex) {
+    const m = a.regex.match(/^\/(.*)\/([a-z]*)$/s);
+    let re: RegExp;
+    try {
+      re = m ? new RegExp(m[1], m[2].replace("g", "")) : new RegExp(a.regex);
+    } catch (e) {
+      return text(`Invalid regular expression: ${(e as Error).message}`, true);
+    }
+    at = (l) => l.search(re);
+    query = String(re);
+  } else {
+    const needle = a.text!.toLowerCase();
+    at = (l) => l.toLowerCase().indexOf(needle);
+    query = `"${a.text}"`;
+  }
+
+  const page = await session.page();
+  if (session.dialog) return text(`A ${session.dialog.type()} dialog is open ("${session.dialog.message().slice(0, 200)}"). Call browser_handle_dialog first.`, true);
+  const lines = (await page.ariaSnapshot({ mode: "ai", timeout: 10_000 })).split("\n");
+  const indents = lines.map(indentOf);
+  const ancestors = (index: number): number[] => {
+    const out: number[] = [];
+    for (let i = index - 1, indent = indents[index]; i >= 0 && indent > 0; i--) {
+      if (lines[i].trim() && indents[i] < indent) out.push(i), (indent = indents[i]);
+    }
+    return out.reverse();
+  };
+
+  const matched = lines.flatMap((l, i) => (at(l) >= 0 ? [i] : []));
+  if (!matched.length) return text(`Page URL: ${page.url()}\nNo matches for ${query}.`);
+  const shown = matched.slice(0, a.maxResults ?? FIND_DEFAULT_RESULTS);
+
+  const windows: Array<{ start: number; end: number }> = [];
+  for (const m of shown) {
+    const start = Math.max(0, m - FIND_CONTEXT);
+    const end = Math.min(lines.length - 1, m + FIND_CONTEXT);
+    const last = windows[windows.length - 1];
+    if (last && start <= last.end + 1) last.end = Math.max(last.end, end);
+    else windows.push({ start, end });
+  }
+  const onPath = new Set<number>();
+  for (const m of shown) [m, ...ancestors(m)].forEach((i) => onPath.add(i));
+  const isMatch = new Set(shown);
+  const render = (i: number) => {
+    const l = lines[i];
+    if (l.length <= 300 || !isMatch.has(i)) return clip(l);
+    const pos = Math.max(0, at(l) - 120);
+    return `${l.slice(0, indents[i])}…${l.slice(pos, pos + 300)}…`;
+  };
+  const snippets = windows.map(({ start, end }) => {
+    const idx = [...ancestors(start), ...Array.from({ length: end - start + 1 }, (_, k) => start + k)];
+    const out: string[] = [];
+    idx.forEach((index, k) => {
+      if (k > 0 && index > idx[k - 1] + 1 && !onPath.has(index) && !onPath.has(idx[k - 1])) out.push(`${" ".repeat(indents[index])}...`);
+      out.push(render(index));
+    });
+    return out.join("\n");
+  });
+
+  const word = matched.length === 1 ? "match" : "matches";
+  const header = shown.length < matched.length
+    ? `Found ${matched.length} ${word} for ${query} (showing the first ${shown.length}; raise maxResults for more):`
+    : `Found ${matched.length} ${word} for ${query}:`;
+  const body = truncate(snippets.join("\n\n----\n\n"), session.cfg.maxSnapshotChars);
+  return text(`Page URL: ${page.url()}\n${header}\n\n${body}`);
 }
 
 /**
@@ -234,7 +394,7 @@ export async function pageState(session: Session, opts: { snapshot?: SnapshotMod
       const snap = await page.ariaSnapshot({ mode: "ai", timeout: 10_000 });
       const d = openDialog(snap);
       if (d) lines.unshift(`Dialog open: ${d.label} [ref=${d.ref}]${d.close ? ` (Close: [ref=${d.close}])` : ""}. The page behind it may be inert.`);
-      lines.push(snapshotText(session, page, snap, opts.snapshot ?? "full"));
+      lines.push(snapshotText(session, page, snap, opts.snapshot ?? "page"));
     } catch (e) {
       lines.push(`(snapshot unavailable: ${(e as Error).message.split("\n")[0]})`);
     }

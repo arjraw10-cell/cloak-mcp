@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { z } from "zod";
 import type { Cap } from "./config.js";
-import { act, assertReceivesInput, clickAt, locate, pageState, pointOf, text, typeInto, waitForRender, type ToolResult } from "./page-actions.js";
+import { act, assertReceivesInput, clickAt, findInPage, locate, pageState, pointOf, sectionSnapshot, text, typeInto, waitForRender, type ToolResult } from "./page-actions.js";
 import type { Session } from "./session.js";
 
 export interface Tool {
@@ -25,7 +25,7 @@ const PROBES = {
 export const tools: Tool[] = [
   {
     name: "browser_navigate",
-    description: "Open a URL in the current tab (launches the browser if needed), or pass back / forward / reload. Returns the page snapshot.",
+    description: "Open a URL in the current tab (launches the browser if needed), or pass back / forward / reload. Returns the page snapshot (for a large page: its top and an outline; search the rest with browser_find).",
     schema: z.object({ url: z.string().describe("Absolute URL, or back | forward | reload") }),
     handler: (s, { url }) =>
       act(s, async (page) => {
@@ -36,16 +36,30 @@ export const tools: Tool[] = [
         else await page.goto(url, opts);
         await waitForRender(page);
         return `Navigated (${url}).`;
-      }, { snapshot: "full" }),
+      }, { snapshot: "page" }),
   },
   {
     name: "browser_snapshot",
-    description: "Accessibility snapshot of the current page with [ref=eN] handles. Every action already returns one; call this only to refresh.",
-    schema: z.object({}),
-    handler: async (s) => {
+    description: "Accessibility snapshot of the current page with [ref=eN] handles. Every action already returns one; call this to refresh, or pass target to read one section (a table, form, list) of a large page.",
+    schema: z.object({
+      target: z.string().optional().describe("Ref of the element to snapshot instead of the whole page"),
+      depth: z.number().int().positive().optional().describe("Limit how many levels deep the tree goes"),
+    }),
+    handler: async (s, a) => {
+      if (a.target || a.depth) return sectionSnapshot(s, a);
       await s.page();
-      return text(await pageState(s));
+      return text(await pageState(s, { snapshot: "full" }));
     },
+  },
+  {
+    name: "browser_find",
+    description: "Search the whole current page for text or a regex. Returns each match with its ref, nearby lines and parent elements, plus the total match count. Use it instead of reading a large page.",
+    schema: z.object({
+      text: z.string().optional().describe("Case-insensitive text to find"),
+      regex: z.string().optional().describe('Regular expression instead of text; wrap in slashes for flags, e.g. "/pending/i"'),
+      maxResults: z.number().int().positive().optional().describe("Matches to show (default 20); the total is always reported"),
+    }),
+    handler: (s, a) => findInPage(s, a),
   },
   {
     name: "browser_click",
@@ -250,7 +264,7 @@ export const tools: Tool[] = [
         await s.page();
       }
       const list = s.listTabs().map((p, i) => `${p === s.currentTab() ? "*" : " "} [${i}] ${p.url()}`);
-      return text(`${list.join("\n")}\n\n${await pageState(s, { snapshot: a.action === "list" ? "none" : "full" })}`);
+      return text(`${list.join("\n")}\n\n${await pageState(s, { snapshot: a.action === "list" ? "none" : "page" })}`);
     },
   },
   {
