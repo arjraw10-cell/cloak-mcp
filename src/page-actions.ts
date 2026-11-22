@@ -277,6 +277,8 @@ export async function sectionSnapshot(session: Session, a: { target?: string; de
   try {
     const opts = { mode: "ai" as const, depth: a.depth, timeout: 10_000 };
     const snap = a.target ? await locate(page, a.target).ariaSnapshot(opts) : await page.ariaSnapshot(opts);
+    // aria-ref resolves against the last snapshot taken, so make that the whole page again.
+    if (a.target) await page.ariaSnapshot({ mode: "ai", timeout: 10_000 });
     const what = [a.target && `element ${a.target}`, a.depth && `depth ${a.depth}`].filter(Boolean).join(", ");
     return text(`Page URL: ${page.url()}\nSnapshot (${what}):\n${truncate(snap, session.cfg.maxSnapshotChars)}`);
   } catch (e) {
