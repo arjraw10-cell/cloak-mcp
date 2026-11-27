@@ -13,7 +13,7 @@ runs = [r for r in bench.read_jsonl(bench.RUNS) if r["phase"] == PHASE]
 v1_schema = bench.ROOT / "results" / "schema_tokens_v1.json"
 schema = json.loads((v1_schema if PHASE == "full" and v1_schema.is_file()
                      else bench.ROOT / "results" / "schema_tokens.json").read_text())
-if PHASE in ("full3", "full4"):  # partial reruns after a code change: those layers were re-measured separately
+if PHASE in ("full3", "full4", "full5"):  # partial reruns after a code change: those layers were re-measured separately
     schema.update(json.loads((bench.ROOT / "results" / f"schema_tokens_{PHASE}.json").read_text()))
 api_errors = [r for r in bench.read_jsonl(bench.API_ERRORS) if r["phase"] == PHASE]
 

@@ -43,12 +43,13 @@ config rerun on the identical suite:
   cloak-mcp, Playwright MCP and Kairos are within noise of each other on success. Wall-clock time is not compared:
   every layer except Playwright MCP types and clicks with deliberately human-like timing.
 
-Four full runs (1,380 runs) plus the pilot cost $4.26 in total. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/);
+Five full runs (1,620 runs) plus the pilot cost $5.09 in total. Tasks, checkers, harness, raw logs and transcripts are in [`bench/`](bench/);
 method and rerun commands in [`bench/BENCHMARK.md`](bench/BENCHMARK.md). Tables: v2 in
 [`bench/results/summary_full2.md`](bench/results/summary_full2.md), v1 in
 [`bench/results/summary.md`](bench/results/summary.md), v1 vs v2 per category in
-[`bench/results/compare_v1_v2.md`](bench/results/compare_v1_v2.md), and v2.1 plus Kairos's port in
-[`bench/results/compare_full4.md`](bench/results/compare_full4.md).
+[`bench/results/compare_v1_v2.md`](bench/results/compare_v1_v2.md), v2.1 plus Kairos's port in
+[`bench/results/compare_full4.md`](bench/results/compare_full4.md), and Kairos's latest fixes in
+[`bench/results/compare_full5.md`](bench/results/compare_full5.md).
 
 ## Setup on any computer
 

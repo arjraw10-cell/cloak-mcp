@@ -44,7 +44,8 @@ prompt, with no tool names. `gen_fixtures.py` regenerates the large-page fixture
 
 ## Logs
 
-- `results/raw/runs.jsonl`: one record per finished run (status, pass/fail and reason, tokens, cost, wall time).
+- `results/raw/runs.jsonl`: one record per finished run (status, pass/fail and reason, tokens, cost, wall time;
+  from full5 on also the client process's `exit_code`).
 - `results/raw/calls.jsonl`: one record per tool call (tool, argument size, latency, result size in tokens
   (tiktoken o200k), error flag and text, timed-out flag).
 - `results/raw/api_errors.jsonl`: runs that died from API/provider errors (re-queued, not counted as failures).
@@ -55,7 +56,7 @@ prompt, with no tool names. `gen_fixtures.py` regenerates the large-page fixture
 - Phases: `dev` runs are harness checks, `pilot` is 6 tasks x 1 repeat, `full` is the analysed run with cloak-mcp
   v1, `full2` is the identical suite rerun (all configs) with cloak-mcp v2, `full3` reruns only the Kairos configs
   with Kairos v2 (same seeded order: the full 420-run list is shuffled, then filtered), `full4` reruns cc-cloak and
-  the Kairos configs with cloak-mcp v2.1 and Kairos v2.1.
+  the Kairos configs with cloak-mcp v2.1 and Kairos v2.1, `full5` reruns only the Kairos configs at Kairos f1ff3f8.
 
 Cost = each API response's token usage x the prices in `provider.json` (Haiku 5.5: $0.10 in / $0.50 out per 1M,
 $0.50 / $2.50 above 100K prompt tokens; cache reads 0.1x and cache writes 1.25x the input price). The runner
@@ -75,6 +76,7 @@ stops launching runs at $18 total.
 | Kairos v1 (phases pilot, full, full2) | commit ac28cd7 (branch v4-claude-standby); Python 3.12.3; cloakbrowser 0.6.0, playwright 1.63.0 |
 | Kairos v2 (phase full3) | commit 116efbc (large-page card, ref-aware `browser_search_page`, `browser_snapshot` target/depth; same dependencies) |
 | Kairos v2.1 (phase full4) | commit 0367e99 (same ref and whole-row fixes, "a\|b" fallback for literal patterns, fast jump before far scrolls) |
+| Kairos (phase full5) | commit f1ff3f8 (`browser_console` refuses while a dialog is open; `browser_type` retypes once without CloakBrowser's typos when stray letters are left; a CLI Ctrl+C fix off the bench path) |
 | Node.js | 25.6.1 |
 | Models | `claude-haiku-5-5` (Anthropic API); `z-ai/glm-5.3-flash` (OpenRouter); `gpt-6-luna`, `gpt-6.1-sol` (OpenAI) |
 
@@ -123,6 +125,12 @@ rem cloak-mcp v2.1 + Kairos v2.1 rerun: check out 1d22924 in vendor\cloak-mcp (n
 powershell -File launch.ps1 full4 --configs cc-cloak,kairos --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
 .venv\Scripts\python analyze.py full4
 .venv\Scripts\python compare_full4.py
+
+rem Kairos f1ff3f8 rerun: check out f1ff3f8 in C:\Users\arjra\Documents\Kairos, then
+.venv\Scripts\python schema_tokens.py full5
+powershell -File launch.ps1 full5 --configs kairos --bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol
+.venv\Scripts\python analyze.py full5
+.venv\Scripts\python compare_full5.py
 ```
 
 `analyze.py full` writes `results/summary.md` (generated tables plus the hand-written findings in
@@ -132,6 +140,8 @@ powershell -File launch.ps1 full4 --configs cc-cloak,kairos --bonus glm-5.3-flas
 `results/compare_kairos.md`; `schema_tokens.py kairos-only` writes `results/schema_tokens_full3.json`.
 `analyze.py full4` writes `results/summary_full4.md` (with `results/notes_full4.md`); `compare_full4.py` writes
 `results/compare_full4.md`; `schema_tokens.py full4` writes `results/schema_tokens_full4.json` (cloak-mcp and Kairos).
+`analyze.py full5` writes `results/summary_full5.md` (with `results/notes_full5.md`); `compare_full5.py` writes
+`results/compare_full5.md`; `schema_tokens.py full5` writes `results/schema_tokens_full5.json` (Kairos).
 
 `launch.ps1` runs `bench.py` through `schtasks /it` (only when the user is logged on), so the browsers are headed
 on the desktop and the run survives SSH disconnects; progress goes to `results/raw/console.log`. Rerunning the

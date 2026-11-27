@@ -1,5 +1,5 @@
 """Benchmark runner. usage:
-  python bench.py dev|pilot|full|full2|full3|full4 [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
+  python bench.py dev|pilot|full|full2|full3|full4|full5 [--workers 4] [--bonus glm-5.3-flash,gpt-6-luna,gpt-6.1-sol]
                              [--configs cc-cloak,...] [--tasks id,...] [--repeats N]
 Writes results/raw/{runs,calls,api_errors}.jsonl and one transcript per run. Finished runs
 (in runs.jsonl) are skipped on restart; runs that died from API errors are re-queued.
@@ -125,7 +125,7 @@ def drive(cmd, env, prompt, cwd, transcript, on_line):
         except psutil.Error:
             pass
     proc.wait(timeout=30)
-    return verdict, idle
+    return verdict, idle, proc.returncode  # exit code: diagnoses silent exits (killed runs show the kill)
 
 
 def run_claude_code(spec, prompt, work, env, transcript):
@@ -172,7 +172,7 @@ def run_claude_code(spec, prompt, work, env, transcript):
             st["result"] = o
             st["final"] = o.get("result") or ""
 
-    verdict, idle = drive(cmd, env, prompt, work, transcript, on_line)
+    verdict, idle, rc = drive(cmd, env, prompt, work, transcript, on_line)
     reqs = [(u.get("input_tokens", 0), u.get("cache_read_input_tokens") or 0,
              u.get("cache_creation_input_tokens") or 0, u.get("output_tokens", 0)) for u in st["usage"].values()]
     res = st["result"] or {}
@@ -186,7 +186,7 @@ def run_claude_code(spec, prompt, work, env, transcript):
     calls = [st["calls"][i] for i in st["order"]]
     return dict(status=status, final=st["final"] or st["last_text"], calls=calls, requests=reqs, idle_s=idle,
                 extra={"init": st["init"], "system_events": st["sys"], "cc_cost_usd": res.get("total_cost_usd"), "num_turns": res.get("num_turns"),
-                       "model_usage": res.get("modelUsage"), "result_subtype": res.get("subtype")})
+                       "model_usage": res.get("modelUsage"), "result_subtype": res.get("subtype"), "exit_code": rc})
 
 
 def run_kairos(spec, prompt, work, env, transcript):
@@ -210,10 +210,10 @@ def run_kairos(spec, prompt, work, env, transcript):
             st["final"], st["status"] = o.get("text") or "", o["status"]
 
     cmd = [sys.executable, str(ROOT / "kairos_run.py"), spec["model"], EFFORT, str(work)]
-    verdict, idle = drive(cmd, {**env, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}, prompt, work, transcript, on_line)
+    verdict, idle, rc = drive(cmd, {**env, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}, prompt, work, transcript, on_line)
     calls = [st["calls"][i] for i in sorted(st["calls"])]
     return dict(status=verdict or st["status"] or "error", final=st["final"], calls=calls, requests=st["reqs"],
-                idle_s=idle, extra={"api_retries": st["retries"]})
+                idle_s=idle, extra={"api_retries": st["retries"], "exit_code": rc})
 
 
 def run_one(spec):
@@ -268,9 +268,9 @@ def plan(phase, bonus, configs, task_ids, repeats):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("phase", choices=["dev", "pilot", "full", "full2", "full3", "full4"])
+    ap.add_argument("phase", choices=["dev", "pilot", "full", "full2", "full3", "full4", "full5"])
     # dev = harness checks; full2 = rerun with cloak-mcp v2; full3 = Kairos-only rerun with Kairos 116efbc;
-    # full4 = cloak-mcp 1d22924 and Kairos 0367e99 (cc-cloak and kairos configs only)
+    # full4 = cloak-mcp 1d22924 and Kairos 0367e99 (cc-cloak and kairos configs only); full5 = Kairos f1ff3f8 only
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--bonus", default="")
     ap.add_argument("--configs", default="")

@@ -40,9 +40,10 @@ def kairos_tools() -> list:
 
 def main():
     # Partial re-measures after a code change, written to their own files so the others stay untouched:
-    # "kairos-only" -> *_full3.json (Kairos), "full4" -> *_full4.json (cloak-mcp and Kairos).
+    # "kairos-only" -> *_full3.json (Kairos), "full4" -> *_full4.json (cloak-mcp and Kairos), "full5" -> *_full5.json (Kairos).
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
-    suffix, layers = {"kairos-only": ("_full3", []), "full4": ("_full4", ["cc-cloak"])}.get(mode, ("", list(LAYERS)))
+    suffix, layers = {"kairos-only": ("_full3", []), "full4": ("_full4", ["cc-cloak"]),
+                      "full5": ("_full5", [])}.get(mode, ("", list(LAYERS)))
     out = {name: mcp_tools(LAYERS[name]) for name in layers}
     out["kairos"] = kairos_tools()
     key = bench.anthropic_key()

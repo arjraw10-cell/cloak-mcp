@@ -1,0 +1,435 @@
+{
+ "kairos": [
+  {
+   "name": "browser_navigate",
+   "description": "Open a URL in the current tab (launches the browser if needed), or pass back / forward / reload. Returns the page snapshot with [ref=eN] handles (for a large page: its top and an outline; search the rest with browser_search_page).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": "Absolute URL, or back | forward | reload"
+     }
+    },
+    "required": [
+     "url"
+    ]
+   }
+  },
+  {
+   "name": "browser_snapshot",
+   "description": "Full accessibility snapshot of the current page with [ref=eN] handles. Actions already return page state; use this to see the whole page again, or pass target to read one section.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "target": {
+      "type": "string",
+      "description": "Ref of one element to snapshot (e.g. a table or form)"
+     },
+     "depth": {
+      "type": "integer",
+      "description": "Limit the snapshot to this many levels"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_click",
+   "description": "Click an element by ref. Pass x/y instead of ref to click viewport coordinates (canvas, captchas, elements missing from the snapshot).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ref": {
+      "type": "string",
+      "description": "Ref from the latest snapshot, e.g. e12 or f1e12"
+     },
+     "button": {
+      "type": "string",
+      "enum": [
+       "left",
+       "right",
+       "middle"
+      ]
+     },
+     "double": {
+      "type": "boolean"
+     },
+     "x": {
+      "type": "number"
+     },
+     "y": {
+      "type": "number"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_type",
+   "description": "Replace the content of a text field by typing like a human. submit presses Enter afterwards.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ref": {
+      "type": "string"
+     },
+     "text": {
+      "type": "string"
+     },
+     "submit": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "ref",
+     "text"
+    ]
+   }
+  },
+  {
+   "name": "browser_fill_form",
+   "description": "Fill several fields in one call. checkbox/radio take \"true\" or \"false\"; combobox takes an option label or value.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "fields": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "ref": {
+         "type": "string"
+        },
+        "type": {
+         "type": "string",
+         "enum": [
+          "textbox",
+          "checkbox",
+          "radio",
+          "combobox"
+         ]
+        },
+        "value": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "ref",
+        "type",
+        "value"
+       ]
+      }
+     }
+    },
+    "required": [
+     "fields"
+    ]
+   }
+  },
+  {
+   "name": "browser_select",
+   "description": "Select option(s) in a <select> by label or value.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ref": {
+      "type": "string"
+     },
+     "values": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "required": [
+     "ref",
+     "values"
+    ]
+   }
+  },
+  {
+   "name": "browser_hover",
+   "description": "Move the mouse over an element (menus, tooltips).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "ref"
+    ]
+   }
+  },
+  {
+   "name": "browser_drag",
+   "description": "Drag one element onto another (from_ref, to_ref), or between viewport coordinates (x1, y1, x2, y2).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "from_ref": {
+      "type": "string"
+     },
+     "to_ref": {
+      "type": "string"
+     },
+     "x1": {
+      "type": "number"
+     },
+     "y1": {
+      "type": "number"
+     },
+     "x2": {
+      "type": "number"
+     },
+     "y2": {
+      "type": "number"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_press_key",
+   "description": "Press a key or combination on the focused element, e.g. Enter, Escape, Tab, Control+A.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "key": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "key"
+    ]
+   }
+  },
+  {
+   "name": "browser_scroll",
+   "description": "Scroll by viewport heights. With ref, scroll the area under that element (inner scroll panes).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "direction": {
+      "type": "string",
+      "enum": [
+       "down",
+       "up"
+      ]
+     },
+     "pages": {
+      "type": "number",
+      "description": "Viewport heights, default 1"
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_wait_for",
+   "description": "Wait for text to appear, text to disappear, or a number of seconds (max 60).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string"
+     },
+     "text_gone": {
+      "type": "string"
+     },
+     "seconds": {
+      "type": "number"
+     },
+     "timeout": {
+      "type": "number",
+      "description": "Seconds to wait for text, default 30"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_screenshot",
+   "description": "Screenshot of the viewport, the full page, or one element (ref), returned as an image. For visual checks; prefer snapshots for reading and acting.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "full_page": {
+      "type": "boolean"
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_evaluate",
+   "description": "Run JavaScript in the page and return the JSON result: an expression (document.title) or a function (() => ...). With ref, pass a function that receives the element (el => el.value).",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "expression": {
+      "type": "string"
+     },
+     "ref": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "expression"
+    ]
+   }
+  },
+  {
+   "name": "browser_search_page",
+   "description": "Search the whole page's snapshot for text (or a regex) and return every match with its ref, nearby lines and parent elements, plus the total count.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "pattern": {
+      "type": "string"
+     },
+     "regex": {
+      "type": "boolean"
+     },
+     "case_sensitive": {
+      "type": "boolean"
+     },
+     "max_results": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "pattern"
+    ]
+   }
+  },
+  {
+   "name": "browser_tabs",
+   "description": "List, open, select or close tabs. index is 0-based; close without index closes the current tab.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "list",
+       "new",
+       "select",
+       "close"
+      ]
+     },
+     "index": {
+      "type": "integer"
+     },
+     "url": {
+      "type": "string",
+      "description": "URL to open with action=new"
+     }
+    },
+    "required": [
+     "action"
+    ]
+   }
+  },
+  {
+   "name": "browser_handle_dialog",
+   "description": "Accept or dismiss the open alert/confirm/prompt dialog.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "accept": {
+      "type": "boolean"
+     },
+     "prompt_text": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "accept"
+    ]
+   }
+  },
+  {
+   "name": "browser_console",
+   "description": "Console messages and uncaught errors of the current page (since it loaded). Without index: a list. With index: one message in full.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "index": {
+      "type": "integer"
+     },
+     "errors_only": {
+      "type": "boolean"
+     },
+     "max_results": {
+      "type": "integer"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_network",
+   "description": "Network requests for the current tab. Without index: a list (filter = URL substring). With index: one request with headers.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "index": {
+      "type": "integer"
+     },
+     "filter": {
+      "type": "string"
+     },
+     "max_results": {
+      "type": "integer"
+     }
+    },
+    "required": []
+   }
+  },
+  {
+   "name": "browser_profile",
+   "description": "Persistent profiles keep logins, cookies and a fixed fingerprint, shared with Claude Code's cloakbrowser MCP (one browser per profile at a time). list shows them; use relaunches the browser in a profile (created if new); ephemeral relaunches with a throwaway session. proxy applies to the relaunch.",
+   "input_schema": {
+    "type": "object",
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "list",
+       "use",
+       "ephemeral"
+      ]
+     },
+     "name": {
+      "type": "string"
+     },
+     "proxy": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "action"
+    ]
+   }
+  },
+  {
+   "name": "browser_close",
+   "description": "Close the browser. The next browser tool relaunches it.",
+   "input_schema": {
+    "type": "object",
+    "properties": {},
+    "required": []
+   }
+  }
+ ]
+}
